@@ -1,0 +1,20 @@
+#
+# Bunkspeed OBJ Material File
+# http://www.bunkspeed.com
+#
+
+newmtl unfinished_american_beech
+Kd 0.8862745 0.4666667 0.2666667
+map_Kd C:\Users\melissaklein\Documents\SOLIDWORKS Visualize Content\Models\beech.dds
+Ks 0.5 0.5 0.5
+map_bump -bm 2 C:\Users\melissaklein\Documents\SOLIDWORKS Visualize Content\Models\beech_n.dds
+bump C:\Users\melissaklein\Documents\SOLIDWORKS Visualize Content\Models\beech_n.dds
+illum 2
+Ns 99.90109
+
+newmtl laminate2_2d
+Kd 1 1 1
+map_Kd C:\Users\melissaklein\Documents\SOLIDWORKS Visualize Content\Models\laminate2.jpg
+Ks 0.5 0.5 0.5
+illum 2
+Ns 6.737052

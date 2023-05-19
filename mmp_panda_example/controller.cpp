@@ -129,23 +129,23 @@ int main() {
 		// update task model and set hierarchy
 		/*
 			arm-driven motion hieararchy: arm -> base -> arm nullspace
-		*/ 
+		
 		N_prec.setIdentity();
 		posori_task->updateTaskModel(N_prec);
 		N_prec = posori_task->_N;	
 		base_task->updateTaskModel(N_prec);
 		N_prec = base_task->_N;	
-		arm_joint_task->updateTaskModel(N_prec);
+		arm_joint_task->updateTaskModel(N_prec);*/
 
-		// /*
-		// 	base-driven motion hieararchy: base -> arm -> arm nullspace 
-		// */
-		// N_prec.setIdentity();
-		// base_task->updateTaskModel(N_prec);
-		// N_prec = base_task->_N;	
-		// posori_task->updateTaskModel(N_prec);
-		// N_prec = posori_task->_N;	
-		// arm_joint_task->updateTaskModel(N_prec);
+		/*
+			base-driven motion hieararchy: base -> arm -> arm nullspace 
+		*/
+		N_prec.setIdentity();
+		base_task->updateTaskModel(N_prec);
+		N_prec = base_task->_N;	
+		posori_task->updateTaskModel(N_prec);
+		N_prec = posori_task->_N;	
+		arm_joint_task->updateTaskModel(N_prec);
 
 		// compute torques
 		posori_task->computeTorques(posori_task_torques);

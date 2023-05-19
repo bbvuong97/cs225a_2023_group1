@@ -25,14 +25,14 @@ using namespace Eigen;
 
 // specify urdf and robots 
 const string world_file = "./resources/world.urdf";
-const string robot_file = "./resources/panda_arm.urdf";
-const string robot_name = "panda";
+const string robot_file = "./resources/kuka_iiwa.urdf";
+const string robot_name = "kuka";
 const string camera_name = "camera_fixed";
 const string base_link_name = "link0";
-const string ee_link_name = "link7";
+const string ee_link_name = "link6";
 
 // dynamic objects information
-const vector<string> object_names = {"cup"};
+const vector<string> object_names = {"bowling_pin", "bowling_pin2", "bowling_pin3","bowling_pin4","bowling_pin5","bowling_pin6","bowling_pin7","bowling_pin8","bowling_pin9","bowling_pin10","ball"};
 vector<Vector3d> object_pos;
 vector<Vector3d> object_lin_vel;
 vector<Quaterniond> object_ori;
@@ -112,10 +112,15 @@ int main() {
 
     // set co-efficient of restition to zero for force control
     sim->setCollisionRestitution(0.0);
+		//sim->setCollisionRestitution("ball", 0.01);
 
     // set co-efficient of friction
     sim->setCoeffFrictionStatic(0.0);
     sim->setCoeffFrictionDynamic(0.0);
+
+		//sim->setCoeffFrictionStatic("Base",0.2);
+    //sim->setCoeffFrictionDynamic("Base",0.2);
+
 
 	/*------- Set up visualization -------*/
 	// set up error callback
@@ -151,6 +156,9 @@ int main() {
 	// cache variables
 	double last_cursorx, last_cursory;
 
+	// initialize glew
+	glewInitialize();
+
 	// init redis client values 
 	redis_client.set(CONTROLLER_RUNNING_KEY, "0");  
 	redis_client.setEigenMatrixJSON(JOINT_ANGLES_KEY, robot->_q); 
@@ -159,25 +167,23 @@ int main() {
 	// start simulation thread
 	thread sim_thread(simulation, robot, sim);
 
-	// initialize glew
-	glewInitialize();
 
 	// add obj file once 
-	string mesh_filename = "../../model/test_objects/meshes/visual/cup.obj";
-	addMesh(graphics, mesh_filename, Vector3d(0.2, -0.2, 0), Quaterniond(1, 0, 0, 0), Vector3d(1, 1, 1));
+	//string mesh_filename = "../../model/test_objects/meshes/visual/cup.obj";
+	//addMesh(graphics, mesh_filename, Vector3d(0.2, -0.2, 0), Quaterniond(1, 0, 0, 0), Vector3d(1, 1, 1));
 
 	// while window is open:
 	int count = 0;
 	Vector3d start_pos = Vector3d(1, -1, 1);
 
-	while (!glfwWindowShouldClose(window) && fSimulationRunning)
+	while (!glfwWindowShouldClose(window) && true)
 	{
 		// add sphere for every nth count
-		if (count % 60 == 0) {  // default refresh rate 
+		/*if (count % 60 == 0) {  // default refresh rate 
 			addSphere(graphics, "test", start_pos, Quaterniond(1, 0, 0, 0), 0.01, Vector4d(1, 1, 1, 1));
 			addBox(graphics, "test", start_pos + Vector3d(-2, 0, 0), Quaterniond(1, 0, 0, 0), Vector3d(0.05, 0.05, 0.05), Vector4d(1, 1, 1, 1));
 			start_pos(1) += 1e-1;
-		}
+		}*/
 
 		// update graphics. this automatically waits for the correct amount of time
 		int width, height;

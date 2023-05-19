@@ -24,7 +24,7 @@ void sighandler(int){runloop = false;}
 #include "redis_keys.h"
 
 // Location of URDF files specifying world and robot information
-const string robot_file = "./resources/panda_arm.urdf";
+const string robot_file = "./resources/kuka_iiwa.urdf";
 
 enum State 
 {
@@ -59,7 +59,7 @@ int main() {
 	MatrixXd N_prec = MatrixXd::Identity(dof, dof);
 
 	// pose task
-	const string control_link = "link7";
+	const string control_link = "link6";
 	const Vector3d control_point = Vector3d(0, 0, 0.07);
 	auto posori_task = new Sai2Primitives::PosOriTask(robot, control_link, control_point);
 	posori_task->_use_interpolation_flag = true;
