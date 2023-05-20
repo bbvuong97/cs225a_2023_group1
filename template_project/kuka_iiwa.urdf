@@ -194,6 +194,94 @@
                 <mesh filename="../../../model/iiwa7/meshes/link6.obj" scale="1 1 1" />
             </geometry>
         </collision> -->
+        <visual>
+        <origin xyz="0 0 0.03" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="../../../model/iiwa7/meshes/hand.obj" scale="1 1 1"/>
+        </geometry>
+      </visual>
+    </link>
+
+    <link name="leftfinger">
+      <inertial>
+        <origin xyz="0 0 0.03" rpy="0 -0 0" />
+        <mass value="0.1" />
+        <inertia ixx="0.01" iyy="0.01" izz="0.005" ixy="0" ixz="0" iyz="0" />
+      </inertial>
+      <visual>
+        <geometry>
+          <mesh filename="../../../model/iiwa7/meshes/finger.obj"/>
+        </geometry>
+      </visual>
+
+        <visual>
+        <origin xyz="0 .01 0" rpy="0 0 0" />
+        <geometry>
+          <box size="0.03 .02 0.1" />
+        </geometry>
+      </visual> 
+    </link>
+
+    <link name="rightfinger">
+      <inertial>
+        <origin xyz="0 0 0.03" rpy="0 -0 0" />
+        <mass value="0.1" />
+        <inertia ixx="0.01" iyy="0.01" izz="0.005" ixy="0" ixz="0" iyz="0" />
+      </inertial>
+      <visual>
+        <!-- <origin xyz="0 0 0" rpy="0 0 3.14159265359" /> -->
+        <geometry>
+          <mesh filename="../../../model/iiwa7/meshes/finger.obj"/>
+        </geometry>
+      </visual>
+
+        <visual>
+        <origin xyz="0 .01 0" rpy="0 0 0" />
+        <geometry>
+          <box size="0.03 .02 0.1" />
+        </geometry>
+      </visual> 
+    </link>
+  
+     <link name="lower_leftfinger">
+      <inertial>
+        <origin xyz="0 0 0.03" rpy="0 -0 0" />
+        <mass value="0.1" />
+        <inertia ixx="0.01" iyy="0.01" izz="0.005" ixy="0" ixz="0" iyz="0" />
+      </inertial>
+      <visual>
+        <geometry>
+          <mesh filename="../../../model/iiwa7/meshes/finger.obj"/>
+        </geometry>
+      </visual>
+
+        <visual>
+        <origin xyz="0 .01 0" rpy="0 0 0" />
+        <geometry>
+          <box size="0.03 .02 0.1" />
+        </geometry>
+      </visual> 
+    </link>
+
+    <link name="lower_rightfinger">
+      <inertial>
+        <origin xyz="0 0 0.03" rpy="0 -0 0" />
+        <mass value="0.1" />
+        <inertia ixx="0.01" iyy="0.01" izz="0.005" ixy="0" ixz="0" iyz="0" />
+      </inertial>
+      <visual>
+        <!-- <origin xyz="0 0 0" rpy="0 0 3.14159265359" /> -->
+        <geometry>
+          <mesh filename="../../../model/iiwa7/meshes/finger.obj"/>
+        </geometry>
+      </visual>
+
+       <visual>
+        <origin xyz="0 .01 0" rpy="0 0 0" />
+        <geometry>
+          <box size="0.03 .02 0.1" />
+        </geometry>
+      </visual> 
     </link>
 
     <joint name = "base_prismatic_x" type = "prismatic">
@@ -284,5 +372,42 @@
         <origin xyz="0.000000 0.000000 0.081000" rpy="0.000000 0.000000 0.000000" />
         <axis xyz="0 0 1" />
         <limit lower="-3.0543" upper="3.0543" effort="40" velocity="3.1416" />
+    </joint>
+
+    <joint name="finger_joint1" type="prismatic">
+      <parent link="link6"/>
+      <child link="leftfinger"/>
+      <origin xyz="-0.015 0.04 0.09" rpy="0 0 1.570796327"/>
+      <axis xyz="0 1 0"/>
+      <!-- <calibration rising="0.02" /> -->
+      <limit effort="20" lower="0.0" upper="0.04" velocity="0.2"/>
+    </joint>
+
+    <joint name="finger_joint2" type="prismatic">
+      <parent link="link6"/>
+      <child link="rightfinger"/>
+      <origin xyz="0.015 0.04 0.09" rpy="0 0 -1.570796327"/>
+      <axis xyz="0 1 0"/>
+      <!-- <calibration rising="-0.04" /> -->
+      <limit effort="20" lower="0.0" upper="0.04" velocity="0.2"/>
+      <!-- <mimic joint="finger_joint1" /> -->
+    </joint>
+
+     <joint name="finger_joint3" type="prismatic">
+      <parent link="link6"/>
+      <child link="lower_leftfinger"/>
+      <origin xyz="-0.015 -0.065 0.09" rpy="0 0 1.570796327"/>
+      <axis xyz="1 0 0"/>
+      <calibration rising="0.02" />
+      <limit effort="20" lower="0.0" upper="0.04" velocity="0.2"/>
+    </joint>
+
+     <joint name="finger_joint4" type="prismatic">
+      <parent link="link6"/>
+      <child link="lower_rightfinger"/>
+      <origin xyz="0.015 -0.065 0.09" rpy="0 0 -1.570796327"/>
+      <axis xyz="1 0 0"/>
+      <calibration rising="-0.02" />
+      <limit effort="20" lower="0.0" upper="0.04" velocity="0.2"/>
     </joint>
 </robot>

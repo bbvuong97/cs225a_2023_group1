@@ -166,7 +166,7 @@ int main() {
 	int count = 0;
 	Vector3d start_pos = Vector3d(1, -1, 1);
 
-	while (!glfwWindowShouldClose(window) && fSimulationRunning)
+	while (!glfwWindowShouldClose(window) && true)
 	{
 		// add sphere for every nth count
 		if (count % 60 == 0) {  // default refresh rate 

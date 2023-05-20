@@ -84,7 +84,7 @@ int main() {
 	Eigen::Vector3d camera_pos, camera_lookat, camera_vertical;
 	graphics->getCameraPose(camera_name, camera_pos, camera_vertical, camera_lookat);
 	graphics->_world->setBackgroundColor(66.0/255, 135.0/255, 245.0/255);  // set blue background 	
-	graphics->showLinkFrame(true, robot_name, ee_link_name, 0.15);  // can add frames for different links
+	//graphics->showLinkFrame(true, robot_name, ee_link_name, 0.15);  // can add frames for different links
 	graphics->getCamera(camera_name)->setClippingPlanes(0.1, 50);  // set the near and far clipping planes 
 
 	// load robots
