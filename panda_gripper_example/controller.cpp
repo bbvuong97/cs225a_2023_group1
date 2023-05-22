@@ -28,14 +28,15 @@ const string robot_file = "./resources/panda_arm.urdf";
 
 enum State 
 {
-	POSTURE = 0, 
-	MOTION
+	BASE = 0, 
+	HAND = 1,
+	GRASP = 2
 };
 
 int main() {
 
 	// initial state 
-	int state = POSTURE;
+	int state = BASE;
 	string controller_status = "1";
 	
 	// start redis client
@@ -49,9 +50,14 @@ int main() {
 
 	// load robots, read current state and update the model
 	auto robot = new Sai2Model::Sai2Model(robot_file, false);
-	robot->_q.head(7) = redis_client.getEigenMatrixJSON(JOINT_ANGLES_KEY);
-	robot->_dq.head(7) = redis_client.getEigenMatrixJSON(JOINT_VELOCITIES_KEY);
+	//robot->_q.head(7) = redis_client.getEigenMatrixJSON(JOINT_ANGLES_KEY);
+	robot->_q.tail(7) = redis_client.getEigenMatrixJSON(JOINT_ANGLES_KEY);
+
+	//robot->_dq.head(7) = redis_client.getEigenMatrixJSON(JOINT_VELOCITIES_KEY);
+	robot->_dq.tail(7) = redis_client.getEigenMatrixJSON(JOINT_VELOCITIES_KEY);
+	cout << "\t joints" << robot->_q.transpose() << "\n";
 	robot->updateModel();
+
 
 	// prepare controller
 	int dof = robot->dof();
@@ -78,12 +84,16 @@ int main() {
 
 	VectorXd joint_task_torques = VectorXd::Zero(dof);
 	joint_task->_kp = 100.0;
-	joint_task->_kv = 20.0;
+	joint_task->_kv = 100.0;
 
 	VectorXd q_init_desired(dof);
-	q_init_desired << -30.0, -15.0, -15.0, -105.0, 0.0, 90.0, 45.0;
+	VectorXd qdot_init_desired(dof);
+	q_init_desired << 0, 0, 0, -30.0, -15.0, -15.0, -105.0, 0.0, 90.0, 45.0;
 	q_init_desired *= M_PI/180.0;
+	qdot_init_desired << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
 	joint_task->_desired_position = q_init_desired;
+	joint_task->_desired_velocity = qdot_init_desired;
+
 
 	// gripper task containers
 	VectorXd gripper_command_torques(2);
@@ -92,6 +102,7 @@ int main() {
 	q_gripper_desired.setZero();
 	double kp_gripper = 100;
 	double kv_gripper = 20;
+
 
 	// containers
 	Vector3d ee_pos;
@@ -122,6 +133,7 @@ int main() {
 
 	runloop = true;
 
+
 	while (runloop) {
 		// wait for next scheduled loop
 		timer.waitForNextLoop();
@@ -133,14 +145,14 @@ int main() {
 		// update model
 		robot->updateModel();
 	
-		if (state == POSTURE) {
+		if (state == BASE) {
 			// update task model and set hierarchy
 			N_prec.setIdentity();
 			joint_task->updateTaskModel(N_prec);
 
 			// compute torques
 			joint_task->computeTorques(joint_task_torques);
-			command_torques.head(7) = joint_task_torques;
+			command_torques.head(10) = joint_task_torques;
 
 			gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 			command_torques.tail(2) = gripper_command_torques;
@@ -150,14 +162,14 @@ int main() {
 				joint_task->reInitializeTask();
 				posori_task->reInitializeTask();
 				robot->position(ee_pos, control_link, control_point);
-				posori_task->_desired_position = ee_pos - Vector3d(-0.1, -0.1, 0.1);//hand pos, get to final pt 
+				posori_task->_desired_position = Vector3d(-0.5, -0.5, 0.5);//hand pos, get to final pt 
 				posori_task->_desired_orientation = AngleAxisd(M_PI/6, Vector3d::UnitX()).toRotationMatrix() * posori_task->_desired_orientation;
 				// posori_task->_desired_orientation = AngleAxisd(0.0000000000000001, Vector3d::UnitX()).toRotationMatrix() * posori_task->_desired_orientation;
 				q_gripper_desired << -0.1, 0.1;
 
-				state = MOTION;
+				state = HAND;
 			}
-		} else if (state == MOTION) {
+		} else if (state == HAND) {
 			// update task model and set hierarchy
 			N_prec.setIdentity();
 			posori_task->updateTaskModel(N_prec);

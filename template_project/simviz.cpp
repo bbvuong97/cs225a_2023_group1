@@ -89,6 +89,7 @@ int main() {
 
 	// load robots
 	auto robot = new Sai2Model::Sai2Model(robot_file, false);
+	robot->updateKinematics();
 	// robot->_q = VectorXd::Zero(7);
 	// robot->_dq = VectorXd::Zero(7);
 	robot->updateModel();
@@ -115,7 +116,7 @@ int main() {
 		//sim->setCollisionRestitution("ball", 0.01);
 
     // set co-efficient of friction
-    sim->setCoeffFrictionStatic(0.0);
+    sim->setCoeffFrictionStatic(0.6);
     sim->setCoeffFrictionDynamic(0.0);
 
 		//sim->setCoeffFrictionStatic("Base",0.2);

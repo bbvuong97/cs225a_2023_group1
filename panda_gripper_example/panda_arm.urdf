@@ -1,23 +1,49 @@
 <?xml version='1.0' encoding='utf-8'?>
 <robot name="panda_arm">
 
-    <link name="link0">
-      <inertial>
-        <origin xyz="0 0 0.05" rpy="0 0 0" />
-        <mass value="4" />
-        <inertia ixx="0.4" iyy="0.4" izz="0.4" ixy="0" ixz="0" iyz="0" />
-      </inertial>
-      <visual>
-        <geometry>
-          <mesh filename="../../../model/panda/meshes/visual/link0.obj"/>
-        </geometry>
-      </visual>
-<!--       <collision>
-        <geometry>
-          <mesh filename="../../../model/panda/meshes/collision/link0.obj"/>
-        </geometry>
-      </collision> -->
-    </link>
+ <!-- GROUND LINK -->
+  <link name ="ground_link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      <mass value="0.001" />
+      <inertia ixx="1E-06" ixy="0.0" ixz="0.0" iyy="1E-06" iyz="0.0" izz="1E-06" />
+    </inertial>
+  </link>
+
+
+  <!-- MOBILE BASE LINKS -->
+  <link name ="base_x">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      <mass value="0.001" />
+      <inertia ixx="1E-06" ixy="0.0" ixz="0.0" iyy="1E-06" iyz="0.0" izz="1E-06" />
+    </inertial>
+  </link>
+
+  <link name = "base_y">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      <mass value = "0.001" />
+      <inertia ixx="1E-06" ixy="0.0" ixz="0.0" iyy="1E-06" iyz="0.0" izz="1E-06" />
+    </inertial>
+  </link>
+
+  <!-- MOBILE BASE + LINK 0 OF PANDA ARM -->
+  <link name = "base_link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.1757" rpy="0 0 0" />
+      <mass value = "64.6" />
+      <inertia ixx="1.721" ixy="0.0" ixz="0.0" iyy="1.712" iyz="0.0" izz="2.030" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="../../../model/mmp_panda/meshes/panda_BaseCombo.obj" />
+      </geometry>
+    </visual>
+  </link>
+
+  
+    
     <link name="link1">
       <inertial>
         <origin xyz="0 0 -0.07" rpy="0 -0 0" />
@@ -137,15 +163,42 @@
         </geometry>
       </collision> -->
     </link>
+
+    <!-- JOINTS -->
+  <joint name = "base_prismatic_x" type = "prismatic">
+    <origin xyz = "0 0 0" rpy = "0 0 0"/> 
+    <parent link = "ground_link" />
+    <child link= "base_x"/>
+    <axis xyz = "1 0 0" />
+    <limit effort="87" lower="-2.8973" upper="2.9873" velocity="2.1750" />
+  </joint>
+
+  <joint name = "base_prismatic_y" type = "prismatic">
+    <origin xyz = "0 0 0" rpy = "0 0 0"/> 
+    <parent link = "base_x" />
+    <child link= "base_y"/>
+    <axis xyz = "0 1 0" />
+    <limit effort="87" lower="-2.8973" upper="2.9873" velocity="2.1750" />
+  </joint>
+
+  <joint name = "base_revolute" type = "revolute">
+    <origin xyz = "0 0 0.0" rpy = "0 0 0"/> 
+    <parent link = "base_y" />
+    <child link= "base_link"/>
+    <axis xyz = "0 0 1" />
+    <limit effort="87" lower="-2.8973" upper="2.8973" velocity="2.1750" />
+  </joint>
+    
     <joint name="joint1" type="revolute">
       <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.8973" soft_upper_limit="2.8973"/>
       <origin rpy="0 0 0" xyz="0 0 0.333"/>
-      <parent link="link0"/>
+      <parent link="base_link"/>
       <child link="link1"/>
       <axis xyz="0 0 1"/>
       <calibration falling="-80.0" />
       <limit effort="87" lower="-2.8973" upper="2.8973" velocity="2.1750"/>
     </joint>
+    
     <joint name="joint2" type="revolute">
       <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-1.7628" soft_upper_limit="1.7628"/>
       <origin rpy="-1.57079632679 0 0" xyz="0 0 0"/>

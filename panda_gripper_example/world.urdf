@@ -8,26 +8,26 @@
 	</robot>
 
 	<static_object name="Base">
-		<origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+		<origin xyz="0.0 -2.1 0.0" rpy="0 0 0" />
 	    <visual>
 	        <origin xyz="0.0 0.0 -0.00635" rpy="0 0 0" />
 	        <geometry>
-				<box size="5 5 0.0127" />
+				<box size="10.3 5.0 0.0127" />
 	        </geometry>
 	        <material name="material">
-		        <color rgba="0.1 0.1 0.1 1.0" />
+		        <color rgba=".5 .5 .5" />
 	        </material>
 	    </visual>
 		<collision>
 	        <origin xyz="0.0 0.0 -0.00635" rpy="0 0 0" />
 	        <geometry>
-	            <box size="5 5 0.0127" />
+	            <box size="10.3 5.0 0.0127" />
 	        </geometry>
-	    </collision>
+	  </collision>
 	</static_object>
 
-	<dynamic_object name="cup">
-		<origin xyz="1.0 0.0 1.0" rpy="0 0 0" />
+	<static_object name="basket">
+		<origin xyz="-1.2 .2 0.0" rpy="0 0 0"/>
 		<inertial>
         	<origin xyz="0 0 0" rpy="0 0 0" />
         	<mass value="10" />
@@ -37,29 +37,152 @@
 	    <visual>
 	        <origin xyz="0 0 0" rpy="0 0 0" />
 			<geometry>
-	            <mesh filename="../../model/test_objects/meshes/visual/cup.obj" />
+	            <mesh filename="../../model/test_objects/meshes/visual/basket.obj" />
 	        </geometry>
-	    </visual>
-
-		<visual>
-	        <origin xyz="0 0 0.06" rpy="0 0 0" />
-	        <geometry>
-	            <box size="0.1 0.1 0.15" />
-	        </geometry>
-	        <material name="material">
-		        <color rgba="1 1 1 1.0" />
-	        </material>
 	    </visual>
 
 	    <collision>
+	        <origin xyz="0.0 -1.0 .1625" rpy="0 0 0" />
+	        <geometry>
+	            <box size=".66 2.0 .325" />
+	        </geometry>
+	    </collision>
+	</static_object>
+
+	<static_object name="Lane_ground">
+		<origin xyz="0.0 0.4 0.0" rpy="0 0 0" />
+	    <visual>
+	        <origin xyz="0.0 0.0 -0.00635" rpy="0 0 0" />
+	        <geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowlinglanes.obj" />
+	        </geometry>
+			</visual>
+		<collision>
+	        <origin xyz="0.0 4.6 -0.00635" rpy="0 0 0" />
+	        <geometry>
+	            <box size="1.0 8.4 0.0127" />
+	        </geometry>
+	  </collision>
+	</static_object>
+
+	<dynamic_object name="ball">
+		<origin xyz="-1.2 -.8 .475" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 0" rpy="0 0 0" />
+        	<mass value="10" />
+        	<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/ball.obj" />
+	        </geometry>
+	    </visual>
+
+	   <collision>
 	        <origin xyz="0 0 0.06" rpy="0 0 0" />
 	        <geometry>
-	            <box size="0.1 0.1 0.15" />
+	            <sphere radius="0.3"/>
 	        </geometry>
 	    </collision>
 	</dynamic_object>
 
-	<light name="light1" type="directional">
+	<dynamic_object name="bowling_pin">
+		<origin xyz="0.0 7.4 0.5" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 0" rpy="0 0 0" />
+        	<mass value="10" />
+        	<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+
+	    <collision>
+	        <origin xyz="0 0 0.01" rpy="0 0 0" />
+	        <geometry>
+	            <cylinder radius=".055" length=".35"/>
+	        </geometry>
+	    </collision>
+	</dynamic_object>
+
+	<dynamic_object name="bowling_pin2">
+		<origin xyz="0.1 7.6 0.5" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 0" rpy="0 0 0" />
+        	<mass value="10" />
+        	<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+
+	    <collision>
+	        <origin xyz="0 0 0.01" rpy="0 0 0" />
+	        <geometry>
+	            <cylinder radius=".055" length=".35"/>
+	        </geometry>
+	    </collision>
+	</dynamic_object>
+
+	<static_object name="Arenawall">
+		<origin xyz="0.0 0.4 0.0" rpy="0 0 0" />
+	    <visual>
+	        <origin xyz="0.0 0.0 -0.00635" rpy="0 0 0" />
+	        <geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/arena_wall.obj" />
+	        </geometry>
+			</visual>
+	</static_object>
+
+<static_object name="Wall">
+		<origin xyz="0.6 4.4 0.0" rpy="0 0 0" />
+	    <!-- <visual>
+	        <origin xyz="0.0 0.0 -0.00635" rpy="0 0 0" />
+	        <geometry>
+				<box size="0.05 8.4 0.2" />
+	        </geometry>
+	        <material name="material">
+		        <color rgba="0 0 0 1.0" />
+	        </material>
+	    </visual> -->
+		<collision>
+	        <origin xyz="0.0 0.0 -0.00635" rpy="0 0 0" />
+	        <geometry>
+	            <box size="0.05 8.4 0.2" />
+	        </geometry>
+	  </collision>
+	</static_object>
+
+	<static_object name="Wall2">
+		<origin xyz="-0.6 4.4 0.0" rpy="0 0 0" />
+	    <!-- <visual>
+	        <origin xyz="0.0 0.0 -0.00635" rpy="0 0 0" />
+	        <geometry>
+				<box size="0.05 8.4 0.2" />
+	        </geometry>
+	        <material name="material">
+		        <color rgba="0 0 0 1.0" />
+	        </material>
+	    </visual> -->
+		<collision>
+	        <origin xyz="0.0 0.0 -0.00635" rpy="0 0 0" />
+	        <geometry>
+	            <box size="-0.05 8.4 0.2" />
+	        </geometry>
+	  </collision>
+	</static_object>
+
+<light name="light1" type="directional">
 		<position xyz="2.0 -2.0 2.0" />
 		<lookat xyz="0.0 0.0 0.0" />
 	</light>
@@ -70,9 +193,9 @@
 	</light>
 
 	<camera name="camera_fixed">
-		<position xyz="0 -2 2.5" />
-		<vertical xyz="0.0 0.0 1.0" />
-		<lookat xyz="0 0 0.5" />
+		<position xyz="0 -3.5 2.5" />
+		<vertical xyz="0.0 0.0 5.0" />
+		<lookat xyz="0 3 0.5" />
 	</camera>
 
 </world>

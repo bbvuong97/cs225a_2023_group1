@@ -32,7 +32,9 @@ const string base_link_name = "link0";
 const string ee_link_name = "link7";
 
 // dynamic objects information
-const vector<string> object_names = {"cup"};
+const vector<string> object_names = {"ball","bowling_pin","bowling_pin2"};
+//const vector<string> object_names = {"bowling_pin", "bowling_pin2", "bowling_pin3","bowling_pin4","bowling_pin5","bowling_pin6","bowling_pin7","bowling_pin8","bowling_pin9","bowling_pin10","ball"};
+
 vector<Vector3d> object_pos;
 vector<Vector3d> object_lin_vel;
 vector<Quaterniond> object_ori;
@@ -84,7 +86,7 @@ int main() {
 	Eigen::Vector3d camera_pos, camera_lookat, camera_vertical;
 	graphics->getCameraPose(camera_name, camera_pos, camera_vertical, camera_lookat);
 	graphics->_world->setBackgroundColor(66.0/255, 135.0/255, 245.0/255);  // set blue background 	
-	graphics->showLinkFrame(true, robot_name, ee_link_name, 0.15);  // can add frames for different links
+	//graphics->showLinkFrame(true, robot_name, ee_link_name, 0.15);  // can add frames for different links
 	graphics->getCamera(camera_name)->setClippingPlanes(0.1, 50);  // set the near and far clipping planes 
 
 	// load robots
@@ -168,12 +170,6 @@ int main() {
 
 	while (!glfwWindowShouldClose(window) && true)
 	{
-		// add sphere for every nth count
-		if (count % 60 == 0) {  // default refresh rate 
-			addSphere(graphics, "test", start_pos, Quaterniond(1, 0, 0, 0), 0.01, Vector4d(1, 1, 1, 1));
-			addBox(graphics, "test", start_pos + Vector3d(-2, 0, 0), Quaterniond(1, 0, 0, 0), Vector3d(0.05, 0.05, 0.05), Vector4d(1, 1, 1, 1));
-			start_pos(1) += 1e-1;
-		}
 
 		// update graphics. this automatically waits for the correct amount of time
 		int width, height;
