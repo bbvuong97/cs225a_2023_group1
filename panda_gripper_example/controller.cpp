@@ -18,6 +18,14 @@ using namespace Eigen;
 #include <signal.h>
 bool runloop = false;
 void sighandler(int){runloop = false;}
+bool fSimulationLoopDone = false;
+bool fControllerLoopDone = false;
+
+// function for converting string to bool
+bool string_to_bool(const std::string& x);
+
+// function for converting bool to string
+inline const char * const bool_to_string(bool b);
 
 #define RAD(deg) ((double)(deg) * M_PI / 180.0)
 
@@ -51,10 +59,10 @@ int main() {
 	// load robots, read current state and update the model
 	auto robot = new Sai2Model::Sai2Model(robot_file, false);
 	//robot->_q.head(7) = redis_client.getEigenMatrixJSON(JOINT_ANGLES_KEY);
-	robot->_q.tail(7) = redis_client.getEigenMatrixJSON(JOINT_ANGLES_KEY);
+	robot->_q = redis_client.getEigenMatrixJSON(JOINT_ANGLES_KEY);
 
 	//robot->_dq.head(7) = redis_client.getEigenMatrixJSON(JOINT_VELOCITIES_KEY);
-	robot->_dq.tail(7) = redis_client.getEigenMatrixJSON(JOINT_VELOCITIES_KEY);
+	robot->_dq = redis_client.getEigenMatrixJSON(JOINT_VELOCITIES_KEY);
 	cout << "\t joints" << robot->_q.transpose() << "\n";
 	robot->updateModel();
 
@@ -79,12 +87,12 @@ int main() {
 
 	// joint task
 	auto joint_task = new Sai2Primitives::JointTask(robot);
-	joint_task->_use_interpolation_flag = true;
+	joint_task->_use_interpolation_flag = false;
 	joint_task->_use_velocity_saturation_flag = true;
 
 	VectorXd joint_task_torques = VectorXd::Zero(dof);
 	joint_task->_kp = 100.0;
-	joint_task->_kv = 100.0;
+	joint_task->_kv = 20.0;
 
 	VectorXd q_init_desired(dof);
 	VectorXd qdot_init_desired(dof);
@@ -92,7 +100,7 @@ int main() {
 	q_init_desired *= M_PI/180.0;
 	qdot_init_desired << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
 	joint_task->_desired_position = q_init_desired;
-	joint_task->_desired_velocity = qdot_init_desired;
+	// joint_task->_desired_velocity = qdot_init_desired;
 
 
 	// gripper task containers
@@ -133,71 +141,95 @@ int main() {
 
 	runloop = true;
 
-
 	while (runloop) {
-		// wait for next scheduled loop
-		timer.waitForNextLoop();
-		double time = timer.elapsedTime() - start_time;
+		// fTimerDidSleep = timer.waitForNextLoop(); // commented out to let current controller loop finish before next loop
 
-		// execute redis read callback
-		redis_client.executeReadCallback(0);
+		// read simulation state
+		fSimulationLoopDone = string_to_bool(redis_client.get(SIMULATION_LOOP_DONE_KEY));
 
-		// update model
-		robot->updateModel();
-	
-		if (state == BASE) {
-			// update task model and set hierarchy
-			N_prec.setIdentity();
-			joint_task->updateTaskModel(N_prec);
+		// run controller loop when simulation loop is done
+		if (fSimulationLoopDone) {
+			// execute redis read callback
+			redis_client.executeReadCallback(0);
 
-			// compute torques
-			joint_task->computeTorques(joint_task_torques);
-			command_torques.head(10) = joint_task_torques;
+			// update model
+			robot->updateModel();
+		
+			if (state == BASE) {
+				// update task model and set hierarchy
+				N_prec.setIdentity();
+				joint_task->updateTaskModel(N_prec);
 
-			gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
-			command_torques.tail(2) = gripper_command_torques;
+				// compute torques
+				joint_task->computeTorques(joint_task_torques);
+				command_torques.head(10) = joint_task_torques;
 
-			if ( (robot->_q - q_init_desired).norm() < 0.15 ) {
-				cout << "Posture To Motion" << endl;
-				joint_task->reInitializeTask();
-				posori_task->reInitializeTask();
-				robot->position(ee_pos, control_link, control_point);
-				posori_task->_desired_position = Vector3d(-0.5, -0.5, 0.5);//hand pos, get to final pt 
-				posori_task->_desired_orientation = AngleAxisd(M_PI/6, Vector3d::UnitX()).toRotationMatrix() * posori_task->_desired_orientation;
-				// posori_task->_desired_orientation = AngleAxisd(0.0000000000000001, Vector3d::UnitX()).toRotationMatrix() * posori_task->_desired_orientation;
-				q_gripper_desired << -0.1, 0.1;
+				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+				command_torques.tail(2) = gripper_command_torques;
 
-				state = HAND;
+				if ( (robot->_q - q_init_desired).norm() < 0.15 ) {
+					cout << "Posture To Motion" << endl;
+					joint_task->reInitializeTask();
+					posori_task->reInitializeTask();
+					robot->position(ee_pos, control_link, control_point);
+					posori_task->_desired_position = Vector3d(-0.5, -0.5, 0.5);//hand pos, get to final pt 
+					posori_task->_desired_orientation = AngleAxisd(M_PI/6, Vector3d::UnitX()).toRotationMatrix() * posori_task->_desired_orientation;
+					// posori_task->_desired_orientation = AngleAxisd(0.0000000000000001, Vector3d::UnitX()).toRotationMatrix() * posori_task->_desired_orientation;
+					q_gripper_desired << -0.1, 0.1;
+
+					state = HAND;
+				}
+			} else if (state == HAND) {
+				// update task model and set hierarchy
+				N_prec.setIdentity();
+				posori_task->updateTaskModel(N_prec);
+				N_prec = posori_task->_N;
+				joint_task->updateTaskModel(N_prec);
+
+				// compute torques
+				posori_task->computeTorques(posori_task_torques);
+				joint_task->computeTorques(joint_task_torques);
+				command_torques.head(10) = posori_task_torques + joint_task_torques;
+
+				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+				command_torques.tail(2) = gripper_command_torques;
 			}
-		} else if (state == HAND) {
-			// update task model and set hierarchy
-			N_prec.setIdentity();
-			posori_task->updateTaskModel(N_prec);
-			N_prec = posori_task->_N;
-			joint_task->updateTaskModel(N_prec);
 
-			// compute torques
-			posori_task->computeTorques(posori_task_torques);
-			joint_task->computeTorques(joint_task_torques);
-			command_torques.head(7) = posori_task_torques + joint_task_torques;
+			// execute redis write callback
+			redis_client.executeWriteCallback(0);	
 
-			gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
-			command_torques.tail(2) = gripper_command_torques;
+			counter++;
 		}
-
-		// execute redis write callback
-		redis_client.executeWriteCallback(0);	
-
-		counter++;
+		// controller loop is done
+		fControllerLoopDone = true;
+		redis_client.set(CONTROLLER_LOOP_DONE_KEY, bool_to_string(fControllerLoopDone));
 	}
 
+	// controller loop is turned off
+	fControllerLoopDone = false;
+	redis_client.set(CONTROLLER_LOOP_DONE_KEY, bool_to_string(fControllerLoopDone));
+
 	double end_time = timer.elapsedTime();
-    std::cout << "\n";
-    std::cout << "Controller Loop run time  : " << end_time << " seconds\n";
-    std::cout << "Controller Loop updates   : " << timer.elapsedCycles() << "\n";
-    std::cout << "Controller Loop frequency : " << timer.elapsedCycles()/end_time << "Hz\n";
+	std::cout << "\n";
+	std::cout << "Controller Loop run time  : " << end_time << " seconds\n";
+	std::cout << "Controller Loop updates   : " << timer.elapsedCycles() << "\n";
+	std::cout << "Controller Loop frequency : " << timer.elapsedCycles()/end_time << "Hz\n";
 
 	redis_client.setEigenMatrixJSON(JOINT_TORQUES_COMMANDED_KEY, 0 * command_torques);  // back to floating
 
 	return 0;
+}
+
+//------------------------------------------------------------------------------
+
+bool string_to_bool(const std::string& x) {
+    assert(x == "false" || x == "true");
+    return x == "true";
+}
+
+//------------------------------------------------------------------------------
+
+inline const char * const bool_to_string(bool b)
+{
+    return b ? "true" : "false";
 }

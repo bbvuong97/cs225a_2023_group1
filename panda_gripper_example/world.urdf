@@ -27,7 +27,7 @@
 	</static_object>
 
 	<static_object name="basket">
-		<origin xyz="-1.2 .2 0.0" rpy="0 0 0"/>
+		<origin xyz="-0.8 .1 0.0" rpy="0 0 0"/>
 		<inertial>
         	<origin xyz="0 0 0" rpy="0 0 0" />
         	<mass value="10" />
@@ -37,14 +37,14 @@
 	    <visual>
 	        <origin xyz="0 0 0" rpy="0 0 0" />
 			<geometry>
-	            <mesh filename="../../model/test_objects/meshes/visual/basket.obj" />
+	            <mesh filename="../../model/test_objects/meshes/visual/basket_small.obj" />
 	        </geometry>
 	    </visual>
 
 	    <collision>
-	        <origin xyz="0.0 -1.0 .1625" rpy="0 0 0" />
+	        <origin xyz="0.0 -0.4 .123" rpy="0 0 0" />
 	        <geometry>
-	            <box size=".66 2.0 .325" />
+	            <box size=".457 1.5 .246" />
 	        </geometry>
 	    </collision>
 	</static_object>
@@ -66,7 +66,7 @@
 	</static_object>
 
 	<dynamic_object name="ball">
-		<origin xyz="-1.2 -.8 .475" rpy="0 0 0" />
+		<origin xyz="-0.8 -.5 .347" rpy="0 0 0" />
 		<inertial>
         	<origin xyz="0 0 0" rpy="0 0 0" />
         	<mass value="10" />
@@ -74,16 +74,16 @@
       	</inertial>
 
 	    <visual>
-	        <origin xyz="0 0 0" rpy="0 0 0" />
+	        <origin xyz="0 0 0.06" rpy="0 0 0" />
 			<geometry>
-	            <mesh filename="../../model/test_objects/meshes/visual/ball.obj" />
+	            <mesh filename="../../model/test_objects/meshes/visual/bowlingball_centered.obj" />
 	        </geometry>
 	    </visual>
 
 	   <collision>
 	        <origin xyz="0 0 0.06" rpy="0 0 0" />
 	        <geometry>
-	            <sphere radius="0.3"/>
+	            <sphere radius="0.2"/>
 	        </geometry>
 	    </collision>
 	</dynamic_object>
@@ -133,6 +133,191 @@
 	        </geometry>
 	    </collision>
 	</dynamic_object>
+
+	<dynamic_object name="bowling_pin3">
+		<origin xyz="-0.1 7.6 0.5" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 0" rpy="0 0 0" />
+        	<mass value="10" />
+        	<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+
+	    <collision>
+	        <origin xyz="0 0 0.01" rpy="0 0 0" />
+	        <geometry>
+	            <cylinder radius=".055" length=".35"/>
+	        </geometry>
+	    </collision>
+	</dynamic_object>
+
+	<dynamic_object name="bowling_pin4">
+		<origin xyz="0.2 7.8 0.5" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 0" rpy="0 0 0" />
+        	<mass value="10" />
+        	<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+
+	    <collision>
+	        <origin xyz="0 0 0.01" rpy="0 0 0" />
+	        <geometry>
+	            <cylinder radius=".055" length=".35"/>
+	        </geometry>
+	    </collision>
+	</dynamic_object>
+
+	<dynamic_object name="bowling_pin5">
+		<origin xyz="0.0 7.8 0.5" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 0" rpy="0 0 0" />
+        	<mass value="10" />
+        	<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+
+	    <collision>
+	        <origin xyz="0 0 0.01" rpy="0 0 0" />
+	        <geometry>
+	            <cylinder radius=".055" length=".35"/>
+	        </geometry>
+	    </collision>
+	</dynamic_object>
+
+	<dynamic_object name="bowling_pin6">
+		<origin xyz="-0.2 7.8 0.5" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 0" rpy="0 0 0" />
+        	<mass value="10" />
+        	<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+
+	    <collision>
+	        <origin xyz="0 0 0.01" rpy="0 0 0" />
+	        <geometry>
+	            <cylinder radius=".055" length=".35"/>
+	        </geometry>
+	    </collision>
+	</dynamic_object>
+
+	<dynamic_object name="bowling_pin7">
+		<origin xyz="0.3 8.0 0.5" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 0" rpy="0 0 0" />
+        	<mass value="10" />
+        	<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+
+	    <collision>
+	        <origin xyz="0 0 0.01" rpy="0 0 0" />
+	        <geometry>
+	            <cylinder radius=".055" length=".35"/>
+	        </geometry>
+	    </collision>
+	</dynamic_object>
+
+	<dynamic_object name="bowling_pin8">
+		<origin xyz="0.1 8.0 0.5" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 0" rpy="0 0 0" />
+        	<mass value="10" />
+        	<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+
+	    <collision>
+	        <origin xyz="0 0 0.01" rpy="0 0 0" />
+	        <geometry>
+	            <cylinder radius=".055" length=".35"/>
+	        </geometry>
+	    </collision>
+	</dynamic_object>
+
+	<dynamic_object name="bowling_pin9">
+		<origin xyz="-0.1 8.0 0.5" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 0" rpy="0 0 0" />
+        	<mass value="10" />
+        	<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+
+	    <collision>
+	        <origin xyz="0 0 0.01" rpy="0 0 0" />
+	        <geometry>
+	            <cylinder radius=".055" length=".35"/>
+	        </geometry>
+	    </collision>
+	</dynamic_object>
+
+	<dynamic_object name="bowling_pin10">
+		<origin xyz="-0.3 8.0 0.5" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 0" rpy="0 0 0" />
+        	<mass value="10" />
+        	<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+
+	    <collision>
+	        <origin xyz="0 0 0.01" rpy="0 0 0" />
+	        <geometry>
+	            <cylinder radius=".055" length=".35"/>
+	        </geometry>
+	    </collision>
+	</dynamic_object>
+	
 
 	<static_object name="Arenawall">
 		<origin xyz="0.0 0.4 0.0" rpy="0 0 0" />

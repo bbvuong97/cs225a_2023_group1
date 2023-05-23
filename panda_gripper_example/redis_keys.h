@@ -12,3 +12,6 @@ const std::string CONTROLLER_RUNNING_KEY = "sai2::sim::panda::controller";
 const std::string GRIPPER_JOINT_ANGLES_KEY = "sai2::sim::panda_gripper::sensors::q";
 const std::string GRIPPER_JOINT_VELOCITIES_KEY = "sai2::sim::panda_gripper::sensors::dq";
 
+// - read + write: 
+const std::string SIMULATION_LOOP_DONE_KEY = "cs225a::simulation::done";
+const std::string CONTROLLER_LOOP_DONE_KEY = "cs225a::controller::done";
