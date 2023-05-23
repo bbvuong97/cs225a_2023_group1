@@ -80,7 +80,7 @@
 	        </geometry>
 	    </visual>
 
-	   <collision>
+	   <collision> 
 	        <origin xyz="0 0 0.06" rpy="0 0 0" />
 	        <geometry>
 	            <sphere radius="0.2"/>

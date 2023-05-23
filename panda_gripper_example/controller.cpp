@@ -96,8 +96,8 @@ int main() {
 
 	VectorXd q_init_desired(dof);
 	VectorXd qdot_init_desired(dof);
-	q_init_desired << 0, 0, 0, -30.0, -15.0, -15.0, -105.0, 0.0, 90.0, 45.0;
-	q_init_desired *= M_PI/180.0;
+	q_init_desired << -.2, -.2, 0, -30.0, -15.0, -15.0, -50.0, 0.0, 45.0, 20.0; //*set init config, 3dof base (prismatic), then 7dof arm
+	q_init_desired.tail(7) *= M_PI/180.0; //arm joints in radians
 	qdot_init_desired << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
 	joint_task->_desired_position = q_init_desired;
 	// joint_task->_desired_velocity = qdot_init_desired;
@@ -157,6 +157,7 @@ int main() {
 		
 			if (state == BASE) {
 				// update task model and set hierarchy
+				//cout<<"base";
 				N_prec.setIdentity();
 				joint_task->updateTaskModel(N_prec);
 
@@ -167,19 +168,20 @@ int main() {
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 				command_torques.tail(2) = gripper_command_torques;
 
-				if ( (robot->_q - q_init_desired).norm() < 0.15 ) {
+				if ( (robot->_q - q_init_desired).norm() < 0.005 ) {
 					cout << "Posture To Motion" << endl;
 					joint_task->reInitializeTask();
 					posori_task->reInitializeTask();
 					robot->position(ee_pos, control_link, control_point);
-					posori_task->_desired_position = Vector3d(-0.5, -0.5, 0.5);//hand pos, get to final pt 
-					posori_task->_desired_orientation = AngleAxisd(M_PI/6, Vector3d::UnitX()).toRotationMatrix() * posori_task->_desired_orientation;
+					posori_task->_desired_position = Vector3d(-0.8, -.5, .345); //*desired end effector position
+					posori_task->_desired_orientation = AngleAxisd(M_PI/6, Vector3d::UnitX()).toRotationMatrix() * posori_task->_desired_orientation; //*desired orientation
 					// posori_task->_desired_orientation = AngleAxisd(0.0000000000000001, Vector3d::UnitX()).toRotationMatrix() * posori_task->_desired_orientation;
-					q_gripper_desired << -0.1, 0.1;
+					q_gripper_desired << -0.1, 0.1; //*distance between end effectors
 
 					state = HAND;
 				}
 			} else if (state == HAND) {
+				//cout<<"hand";
 				// update task model and set hierarchy
 				N_prec.setIdentity();
 				posori_task->updateTaskModel(N_prec);
@@ -193,6 +195,10 @@ int main() {
 
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 				command_torques.tail(2) = gripper_command_torques;
+
+			} else if(state == GRASP){
+				cout<<"grasp";
+
 			}
 
 			// execute redis write callback
