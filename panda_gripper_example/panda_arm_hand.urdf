@@ -206,16 +206,16 @@
       </visual>
 
        <collision>
-        <origin xyz="0 0 .15" rpy="0 0 0" />
+        <origin xyz="0 0 .1" rpy="0 0 0" />
         <geometry>
-          <box size="0.2 .02 0.3" />
+          <box size="0.2 .02 0.2" />
         </geometry>
       </collision> 
 
       <visual>
-        <origin xyz="0 0 .15" rpy="0 0 0" />
+        <origin xyz="0 0 .1" rpy="0 0 0" />
         <geometry>
-          <box size="0.2 .02 0.3" />
+          <box size="0.2 .02 0.2" />
         </geometry>
       </visual>  
     </link>
@@ -235,16 +235,16 @@
       </visual>
 
       <collision>
-        <origin xyz="0 0 .15" rpy="0 0 0" />
+        <origin xyz="0 0 .1" rpy="0 0 0" />
         <geometry>
-          <box size="0.2 .02 0.3" />
+          <box size="0.2 .02 0.2" />
         </geometry>
       </collision> 
 
       <visual>
-        <origin xyz="0 0 .15" rpy="0 0 0" />
+        <origin xyz="0 0 .1" rpy="0 0 0" />
         <geometry>
-          <box size="0.2 .02 0.3" />
+          <box size="0.2 .02 0.2" />
         </geometry>
       </visual>  
     </link>

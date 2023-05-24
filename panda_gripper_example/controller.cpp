@@ -38,7 +38,7 @@ enum State
 {
 	BASE = 0, 
 	HAND = 1,
-	GRASP = 2
+	LOWERHAND = 2
 };
 
 int main() {
@@ -85,7 +85,7 @@ int main() {
 	posori_task->_kv_ori = 24.0;
 	Matrix3d vert_orient;
 	vert_orient << 1, 0, 0,
-								 0,-1, 0,
+								 0,1, 0,
 								 0, 0,-1;
 
 	// joint task
@@ -100,6 +100,9 @@ int main() {
 
 	VectorXd q_init_desired(7);
 	VectorXd qdot_init_desired(7);
+	VectorXd initial_q = robot->_q.tail(7);
+	Vector3d aboveBallPos;
+
 	q_init_desired << 180.0, -15.0, -15.0, -105.0, 0.0, 90.0, 45.0; //*set init config
 	q_init_desired *= M_PI/180.0; //arm joints in radians
 	//qdot_init_desired << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
@@ -127,7 +130,7 @@ int main() {
 	base_task->_kv = 40;
 	VectorXd base_pose_desired(3);
 	base_pose_desired << -.3, -.3, 0;
-	VectorXd base_pose_init = base_pose_desired;
+	base_task->_desired_position = base_pose_desired;
 
 	// containers
 	Vector3d ee_pos;
@@ -188,30 +191,30 @@ int main() {
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 				command_torques.tail(2) = gripper_command_torques;
 
-				if ( (robot->_q.segment(3,7) - q_init_desired).norm() < 0.005 ) {
+				if ( (robot->_q.head(3) - base_pose_desired).norm() < 0.005 ) {
 	
 					cout << "Posture To Motion" << endl;
 					joint_task->reInitializeTask();
 					posori_task->reInitializeTask();
-					robot->position(ee_pos, control_link, control_point);
-					posori_task->_desired_position = Vector3d(-0.8, -.5, 0.745); //*desired end effector position
-					posori_task->_desired_orientation = vert_orient; //*desired orientation
+					//posori_task->_desired_position = Vector3d(-0.8, -.5, 0.745); //*desired end effector position
+					//posori_task->_desired_orientation = vert_orient; //*desired orientation
 					// posori_task->_desired_orientation = AngleAxisd(0.0000000000000001, Vector3d::UnitX()).toRotationMatrix() * posori_task->_desired_orientation;
-					q_gripper_desired << -0.2, 0.2; //*distance between end effectors
+					q_gripper_desired << -0.18, 0.18; //*distance between end effectors
 
 					state = HAND;
 				}
 			} else if (state == HAND) {
-				cout<<"hand";
+				//cout<<"hand";
 				// update task model and set hierarchy
 				//joint_task->reInitializeTask();
 				//posori_task->reInitializeTask();
 				//base_task->reInitializeTask();
 				//robot->position(ee_pos, control_link, control_point);
 
-				posori_task->_desired_position = Vector3d(-0.8, -.5, 0.845); 
+				aboveBallPos << -0.8, -.5, 0.745;
+				posori_task->_desired_position = aboveBallPos;
 				posori_task->_desired_orientation = vert_orient;
-				base_task->_desired_position = Vector3d(-0.3,-0.3,0);
+				base_task->_desired_position = base_pose_desired;
 				
 				N_prec.setIdentity();
 				base_task->updateTaskModel(N_prec);
@@ -229,9 +232,15 @@ int main() {
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 				command_torques.tail(2) = gripper_command_torques;
 
-			} else if(state == GRASP){
-				cout<<"grasp";
+				robot->position(ee_pos, control_link, control_point);
 
+				if ( (ee_pos - aboveBallPos).norm() < 0.005 ) {
+					state = LOWERHAND;
+				}
+
+			} else if(state == LOWERHAND){
+				cout<<"grasp";
+				
 			}
 
 			// execute redis write callback
