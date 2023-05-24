@@ -102,6 +102,7 @@ int main() {
 	VectorXd qdot_init_desired(7);
 	VectorXd initial_q = robot->_q.tail(7);
 	Vector3d aboveBallPos;
+	Vector3d atBallHeight;
 
 	q_init_desired << 180.0, -15.0, -15.0, -105.0, 0.0, 90.0, 45.0; //*set init config
 	q_init_desired *= M_PI/180.0; //arm joints in radians
@@ -129,7 +130,7 @@ int main() {
 	base_task->_kp = 400;
 	base_task->_kv = 40;
 	VectorXd base_pose_desired(3);
-	base_pose_desired << -.3, -.3, 0;
+	base_pose_desired << -.25, -.25, 0;
 	base_task->_desired_position = base_pose_desired;
 
 	// containers
@@ -199,7 +200,7 @@ int main() {
 					//posori_task->_desired_position = Vector3d(-0.8, -.5, 0.745); //*desired end effector position
 					//posori_task->_desired_orientation = vert_orient; //*desired orientation
 					// posori_task->_desired_orientation = AngleAxisd(0.0000000000000001, Vector3d::UnitX()).toRotationMatrix() * posori_task->_desired_orientation;
-					q_gripper_desired << -0.18, 0.18; //*distance between end effectors
+					q_gripper_desired << -0.15, 0.15; //*distance between end effectors
 
 					state = HAND;
 				}
@@ -236,11 +237,38 @@ int main() {
 
 				if ( (ee_pos - aboveBallPos).norm() < 0.005 ) {
 					state = LOWERHAND;
+					cout<<"lowerhand";
 				}
 
 			} else if(state == LOWERHAND){
-				cout<<"grasp";
+				//cout<<"grasp";
+				atBallHeight << -0.8, -.5, 0.445;
+				posori_task->reInitializeTask();
+				posori_task->_desired_position = atBallHeight;
+				posori_task->_desired_orientation = vert_orient;
+
+				N_prec.setIdentity();
+				posori_task->updateTaskModel(N_prec);
+				N_prec = posori_task->_N;
+				base_task->updateTaskModel(N_prec);
+				N_prec = base_task->_N;	
+			  joint_task->updateTaskModel(N_prec);
+
+				posori_task->computeTorques(posori_task_torques);
+				base_task->computeTorques(base_task_torques);
+				joint_task->computeTorques(joint_task_torques);
+				command_torques.head(10) = posori_task_torques + joint_task_torques + base_task_torques;
 				
+				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+				command_torques.tail(2) = gripper_command_torques;
+
+				robot->position(ee_pos, control_link, control_point);
+
+				cout<< "\t" << ee_pos.transpose() << "\n";
+
+				if ( (ee_pos - atBallHeight).norm() < 0.01 ) {
+					cout<<"correct height";
+				}
 			}
 
 			// execute redis write callback
