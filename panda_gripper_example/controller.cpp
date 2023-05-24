@@ -66,7 +66,6 @@ int main() {
 	cout << "\t joints" << robot->_q.transpose() << "\n";
 	robot->updateModel();
 
-
 	// prepare controller
 	int dof = robot->dof();
 	VectorXd command_torques = VectorXd::Zero(dof + 2);  // panda + gripper torques 
@@ -76,31 +75,36 @@ int main() {
 	const string control_link = "link7";
 	const Vector3d control_point = Vector3d(0, 0, 0.07);
 	auto posori_task = new Sai2Primitives::PosOriTask(robot, control_link, control_point);
-	posori_task->_use_interpolation_flag = true;
-	posori_task->_use_velocity_saturation_flag = true;
+	posori_task->_use_interpolation_flag = false;
+	posori_task->_use_velocity_saturation_flag = false;
 
 	VectorXd posori_task_torques = VectorXd::Zero(dof);
-	posori_task->_kp_pos = 100.0;
-	posori_task->_kv_pos = 20.0;
-	posori_task->_kp_ori = 100.0;
-	posori_task->_kv_ori = 20.0;
+	posori_task->_kp_pos = 200.0;
+	posori_task->_kv_pos = 24.0;
+	posori_task->_kp_ori = 200.0;
+	posori_task->_kv_ori = 24.0;
+	Matrix3d vert_orient;
+	vert_orient << 1, 0, 0,
+								 0,-1, 0,
+								 0, 0,-1;
 
 	// joint task
-	auto joint_task = new Sai2Primitives::JointTask(robot);
+	vector<int> arm_joint_selection{3, 4, 5, 6, 7, 8, 9};
+	auto joint_task = new Sai2Primitives::PartialJointTask(robot, arm_joint_selection);
 	joint_task->_use_interpolation_flag = false;
-	joint_task->_use_velocity_saturation_flag = true;
+	joint_task->_use_velocity_saturation_flag = false;
 
 	VectorXd joint_task_torques = VectorXd::Zero(dof);
 	joint_task->_kp = 100.0;
-	joint_task->_kv = 20.0;
+	joint_task->_kv = 24.0;
 
-	VectorXd q_init_desired(dof);
-	VectorXd qdot_init_desired(dof);
-	q_init_desired << -.2, -.2, 0, -30.0, -15.0, -15.0, -50.0, 0.0, 45.0, 20.0; //*set init config, 3dof base (prismatic), then 7dof arm
-	q_init_desired.tail(7) *= M_PI/180.0; //arm joints in radians
-	qdot_init_desired << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+	VectorXd q_init_desired(7);
+	VectorXd qdot_init_desired(7);
+	q_init_desired << 180.0, -15.0, -15.0, -105.0, 0.0, 90.0, 45.0; //*set init config
+	q_init_desired *= M_PI/180.0; //arm joints in radians
+	//qdot_init_desired << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
 	joint_task->_desired_position = q_init_desired;
-	// joint_task->_desired_velocity = qdot_init_desired;
+	//joint_task->_desired_velocity = qdot_init_desired;
 
 
 	// gripper task containers
@@ -111,6 +115,19 @@ int main() {
 	double kp_gripper = 100;
 	double kv_gripper = 20;
 
+	// partial joint task to control the mobile base 
+	vector<int> base_joint_selection{0, 1, 2};
+	auto base_task = new Sai2Primitives::PartialJointTask(robot, base_joint_selection);
+	base_task->_use_interpolation_flag = false;  // turn off if trajectory following; else turn on
+	base_task->_use_velocity_saturation_flag = true;
+	base_task->_saturation_velocity << 0.2, 0.2, 0.2;  // adjust based on speed
+	
+	VectorXd base_task_torques = VectorXd::Zero(dof);
+	base_task->_kp = 400;
+	base_task->_kv = 40;
+	VectorXd base_pose_desired(3);
+	base_pose_desired << -.3, -.3, 0;
+	VectorXd base_pose_init = base_pose_desired;
 
 	// containers
 	Vector3d ee_pos;
@@ -159,39 +176,55 @@ int main() {
 				// update task model and set hierarchy
 				//cout<<"base";
 				N_prec.setIdentity();
-				joint_task->updateTaskModel(N_prec);
+				base_task->updateTaskModel(N_prec);
+				N_prec = base_task->_N;	
+			  joint_task->updateTaskModel(N_prec);
 
 				// compute torques
+				base_task->computeTorques(base_task_torques);
 				joint_task->computeTorques(joint_task_torques);
-				command_torques.head(10) = joint_task_torques;
+				command_torques.head(10) = base_task_torques + joint_task_torques;
 
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 				command_torques.tail(2) = gripper_command_torques;
 
-				if ( (robot->_q - q_init_desired).norm() < 0.005 ) {
+				if ( (robot->_q.segment(3,7) - q_init_desired).norm() < 0.005 ) {
+	
 					cout << "Posture To Motion" << endl;
 					joint_task->reInitializeTask();
 					posori_task->reInitializeTask();
 					robot->position(ee_pos, control_link, control_point);
-					posori_task->_desired_position = Vector3d(-0.8, -.5, .345); //*desired end effector position
-					posori_task->_desired_orientation = AngleAxisd(M_PI/6, Vector3d::UnitX()).toRotationMatrix() * posori_task->_desired_orientation; //*desired orientation
+					posori_task->_desired_position = Vector3d(-0.8, -.5, 0.745); //*desired end effector position
+					posori_task->_desired_orientation = vert_orient; //*desired orientation
 					// posori_task->_desired_orientation = AngleAxisd(0.0000000000000001, Vector3d::UnitX()).toRotationMatrix() * posori_task->_desired_orientation;
-					q_gripper_desired << -0.1, 0.1; //*distance between end effectors
+					q_gripper_desired << -0.2, 0.2; //*distance between end effectors
 
 					state = HAND;
 				}
 			} else if (state == HAND) {
-				//cout<<"hand";
+				cout<<"hand";
 				// update task model and set hierarchy
+				//joint_task->reInitializeTask();
+				//posori_task->reInitializeTask();
+				//base_task->reInitializeTask();
+				//robot->position(ee_pos, control_link, control_point);
+
+				posori_task->_desired_position = Vector3d(-0.8, -.5, 0.845); 
+				posori_task->_desired_orientation = vert_orient;
+				base_task->_desired_position = Vector3d(-0.3,-0.3,0);
+				
 				N_prec.setIdentity();
+				base_task->updateTaskModel(N_prec);
+				N_prec = base_task->_N;	
 				posori_task->updateTaskModel(N_prec);
 				N_prec = posori_task->_N;
-				joint_task->updateTaskModel(N_prec);
+			  joint_task->updateTaskModel(N_prec);
 
 				// compute torques
 				posori_task->computeTorques(posori_task_torques);
+				base_task->computeTorques(base_task_torques);
 				joint_task->computeTorques(joint_task_torques);
-				command_torques.head(10) = posori_task_torques + joint_task_torques;
+				command_torques.head(10) = posori_task_torques + joint_task_torques + base_task_torques;
 
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 				command_torques.tail(2) = gripper_command_torques;

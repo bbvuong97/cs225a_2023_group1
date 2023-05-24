@@ -212,12 +212,12 @@
         </geometry>
       </collision> 
 
-      <!-- <visual>
+      <visual>
         <origin xyz="0 0 .15" rpy="0 0 0" />
         <geometry>
           <box size="0.2 .02 0.3" />
         </geometry>
-      </visual>  -->
+      </visual>  
     </link>
 
 
@@ -241,12 +241,12 @@
         </geometry>
       </collision> 
 
-      <!-- <visual>
+      <visual>
         <origin xyz="0 0 .15" rpy="0 0 0" />
         <geometry>
           <box size="0.2 .02 0.3" />
         </geometry>
-      </visual>  -->
+      </visual>  
     </link>
 
     <!-- JOINTS -->
@@ -339,7 +339,7 @@
       <child link="leftfinger"/>
       <origin xyz="0 0 0.1654" rpy="0 0 -0.78539816339"/>
       <axis xyz="0 1 0"/>
-      <calibration rising="0.02" />
+      <calibration rising="0.04" />
       <limit effort="20" lower="0.0" upper="0.04" velocity="0.2"/>
     </joint>
     <joint name="finger_joint2" type="prismatic">
@@ -347,7 +347,7 @@
       <child link="rightfinger"/>
       <origin xyz="0 0 0.1654" rpy="0 0 -0.78539816339"/>
       <axis xyz="0 1 0"/>
-      <calibration rising="-0.02" />
+      <calibration rising="-0.04" />
       <limit effort="20" lower="0.0" upper="0.04" velocity="0.2"/>
       <!-- <mimic joint="finger_joint1" /> -->
     </joint>
