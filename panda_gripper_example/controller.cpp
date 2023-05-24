@@ -361,29 +361,30 @@ int main() {
 				}
 			} else if (state==KEYPRESSMVT){
 
+				base_task->_desired_position(1) = 0;
+				base_task->_desired_position(2) = 0;
 
+				if (redis_client.get("MOVE_LEFT") == "1"){
+					base_task->_desired_position(0) -= 0.1;
+					redis_client.set("MOVE_LEFT", "0");
+				}
+				if (redis_client.get("MOVE_RIGHT") == "1"){
+					base_task->_desired_position(0) += 0.1;
+					redis_client.set("MOVE_RIGHT", "0");
+				}
 
-				// if (redis_client.get("MOVE_LEFT") == "1"){
-				// 	base_task->_desired_position(0) -= 0.1;
-				// 	redis_client.set("MOVE_LEFT", "0");
-				// }
-				// if (redis_client.get("MOVE_RIGHT") == "1"){
-				// 	base_task->_desired_position(0) += 0.1;
-				// 	redis_client.set("MOVE_RIGHT", "0");
-				// }
+				N_prec.setIdentity();
+				base_task->updateTaskModel(N_prec);
+				N_prec = base_task->_N;	
+			  joint_task->updateTaskModel(N_prec);
 
-				// N_prec.setIdentity();
-				// base_task->updateTaskModel(N_prec);
-				// N_prec = base_task->_N;	
-			  // joint_task->updateTaskModel(N_prec);
+				base_task->computeTorques(base_task_torques);
+				joint_task->computeTorques(joint_task_torques);
+				command_torques.head(10) = base_task_torques + joint_task_torques;
 
-				// base_task->computeTorques(base_task_torques);
-				// joint_task->computeTorques(joint_task_torques);
-				// command_torques.head(10) = base_task_torques + joint_task_torques;
-
-				// q_gripper_desired << -0.05, 0.05;
-				// gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
-				// command_torques.tail(2) = gripper_command_torques;
+				q_gripper_desired << -0.05, 0.05;
+				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+				command_torques.tail(2) = gripper_command_torques;
 
 				//state = START_POS;
 			}

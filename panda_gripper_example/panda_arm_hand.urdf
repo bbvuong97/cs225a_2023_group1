@@ -201,7 +201,7 @@
       </inertial>
       <visual>
         <geometry>
-          <mesh filename="../../../model/panda/meshes/visual/finger.obj"/>
+          <mesh filename="../../../model/panda/meshes/visual/finger.obj" scale="2 2 2"/>
         </geometry>
       </visual>
 
@@ -212,12 +212,12 @@
         </geometry>
       </collision> 
 
-      <visual>
+      <!-- <visual>
         <origin xyz="0 0 .1" rpy="0 0 0" />
         <geometry>
           <box size="0.2 .02 0.2" />
         </geometry>
-      </visual>  
+      </visual>   -->
     </link>
 
 
@@ -230,7 +230,7 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 3.14159265359" />
         <geometry>
-          <mesh filename="../../../model/panda/meshes/visual/finger.obj"/>
+          <mesh filename="../../../model/panda/meshes/visual/finger.obj" scale="2 2 2"/>
         </geometry>
       </visual>
 
@@ -241,12 +241,12 @@
         </geometry>
       </collision> 
 
-      <visual>
+      <!-- <visual>
         <origin xyz="0 0 .1" rpy="0 0 0" />
         <geometry>
           <box size="0.2 .02 0.2" />
         </geometry>
-      </visual>  
+      </visual>   -->
     </link>
 
     <!-- JOINTS -->
