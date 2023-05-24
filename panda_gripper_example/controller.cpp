@@ -40,7 +40,9 @@ enum State
 	HAND = 1,
 	LOWERHAND = 2,
 	GRASP = 3,
-	LIFT = 4
+	LIFT = 4,
+	RETURNTOCENTER = 5,
+	KEYPRESSMVT = 6
 };
 
 int main() {
@@ -132,7 +134,9 @@ int main() {
 	base_task->_kp = 400;
 	base_task->_kv = 40;
 	VectorXd base_pose_desired(3);
+	VectorXd base_pose_center(3);
 	base_pose_desired << -.25, -.25, 0;
+	base_pose_center << 0, 0, 0;
 	base_task->_desired_position = base_pose_desired;
 
 	// containers
@@ -180,7 +184,6 @@ int main() {
 		
 			if (state == BASE) {
 				// update task model and set hierarchy
-				//cout<<"base";
 				N_prec.setIdentity();
 				base_task->updateTaskModel(N_prec);
 				N_prec = base_task->_N;	
@@ -196,7 +199,7 @@ int main() {
 
 				if ( (robot->_q.head(3) - base_pose_desired).norm() < 0.005 ) {
 	
-					cout << "Posture To Motion" << endl;
+					cout << "Move to state 1: HAND \n" << endl;
 					joint_task->reInitializeTask();
 					posori_task->reInitializeTask();
 					//posori_task->_desired_position = Vector3d(-0.8, -.5, 0.745); //*desired end effector position
@@ -207,7 +210,6 @@ int main() {
 					state = HAND;
 				}
 			} else if (state == HAND) {
-				//cout<<"hand";
 				// update task model and set hierarchy
 				//joint_task->reInitializeTask();
 				//posori_task->reInitializeTask();
@@ -238,6 +240,7 @@ int main() {
 				robot->position(ee_pos, control_link, control_point);
 
 				if ( (ee_pos - aboveBallPos).norm() < 0.005 ) {
+					cout << "Move to state 2: LOWERHAND \n" << endl;
 					state = LOWERHAND;
 				}
 
@@ -269,6 +272,7 @@ int main() {
 
 				if ( (ee_pos - atBallHeight).norm() < 0.01 ) {
 					state = GRASP;
+					cout << "Move to state 3: GRASP \n" << endl;
 				}
 			} else if(state == GRASP){
 				
@@ -292,6 +296,7 @@ int main() {
 
 				if ( q_gripper(1)<.12 ) {
 					state = LIFT;
+					cout << "Move to state 4: LIFT \n" << endl;
 				}
 
 			} else if(state == LIFT){
@@ -315,6 +320,40 @@ int main() {
 				q_gripper_desired << -0.05, 0.05;
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 				command_torques.tail(2) = gripper_command_torques;
+
+				robot->position(ee_pos, control_link, control_point);
+
+				if ( (ee_pos - aboveBallPos).norm() < 0.01 ) {
+					state = RETURNTOCENTER;
+					joint_task->reInitializeTask();
+					base_task->reInitializeTask();
+					base_task->_desired_position = base_pose_center;
+					joint_task->_desired_position = q_init_desired;
+					cout << "Move to state 5: RETURNTOCENTER\n" << endl;
+				}
+
+			} else if(state == RETURNTOCENTER){
+
+				N_prec.setIdentity();
+				base_task->updateTaskModel(N_prec);
+				N_prec = base_task->_N;	
+			  joint_task->updateTaskModel(N_prec);
+
+				// compute torques
+				base_task->computeTorques(base_task_torques);
+				joint_task->computeTorques(joint_task_torques);
+				command_torques.head(10) = base_task_torques + joint_task_torques;
+
+				q_gripper_desired << -0.05, 0.05;
+				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+				command_torques.tail(2) = gripper_command_torques;
+
+				if ( (robot->_q.head(3) - base_pose_center).norm() < 0.005 ) {
+						state = KEYPRESSMVT;
+						cout << "Move to state 6: KEYPRESS \n" << endl;
+				}
+			} else if (state==KEYPRESSMVT){
+				
 			}
 
 

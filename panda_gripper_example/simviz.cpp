@@ -126,6 +126,7 @@ int main() {
     // set co-efficient of friction
     sim->setCoeffFrictionStatic(0.0);
     sim->setCoeffFrictionDynamic(0.0);
+		sim->setCoeffFrictionStatic("ball",0.5);
 
 	/*------- Set up visualization -------*/
 	// set up error callback
