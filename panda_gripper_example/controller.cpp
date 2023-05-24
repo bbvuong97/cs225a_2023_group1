@@ -54,6 +54,8 @@ int main() {
 	// start redis client
 	auto redis_client = RedisClient();
 	redis_client.connect();
+	redis_client.set("MOVE_LEFT","0");
+	redis_client.set("MOVE_RIGHT","0");
 
 	// set up signal handler
 	signal(SIGABRT, &sighandler);
@@ -288,9 +290,11 @@ int main() {
 				joint_task->computeTorques(joint_task_torques);
 				command_torques.head(10) = posori_task_torques + joint_task_torques + base_task_torques;
 			
-				q_gripper_desired << -0.05, 0.05;
-				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+				//q_gripper_desired << -0.05, 0.05;
+				//gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+				gripper_command_torques = Vector2d(15,-15);
 				command_torques.tail(2) = gripper_command_torques;
+				//cout<< "\t" << gripper_command_torques.transpose() << "\n";
 
 				//cout << (q_gripper).transpose() << "\n";
 
@@ -317,8 +321,10 @@ int main() {
 				joint_task->computeTorques(joint_task_torques);
 				command_torques.head(10) = posori_task_torques + joint_task_torques + base_task_torques;
 				
-				q_gripper_desired << -0.05, 0.05;
-				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+				//q_gripper_desired << -0.05, 0.05;
+				//gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+				gripper_command_torques = Vector2d(15,-15);
+				//cout<< "\t" << gripper_command_torques.transpose() << "\n";
 				command_torques.tail(2) = gripper_command_torques;
 
 				robot->position(ee_pos, control_link, control_point);
@@ -351,9 +357,35 @@ int main() {
 				if ( (robot->_q.head(3) - base_pose_center).norm() < 0.005 ) {
 						state = KEYPRESSMVT;
 						cout << "Move to state 6: KEYPRESS \n" << endl;
+						base_task->reInitializeTask();
 				}
 			} else if (state==KEYPRESSMVT){
-				
+
+
+
+				// if (redis_client.get("MOVE_LEFT") == "1"){
+				// 	base_task->_desired_position(0) -= 0.1;
+				// 	redis_client.set("MOVE_LEFT", "0");
+				// }
+				// if (redis_client.get("MOVE_RIGHT") == "1"){
+				// 	base_task->_desired_position(0) += 0.1;
+				// 	redis_client.set("MOVE_RIGHT", "0");
+				// }
+
+				// N_prec.setIdentity();
+				// base_task->updateTaskModel(N_prec);
+				// N_prec = base_task->_N;	
+			  // joint_task->updateTaskModel(N_prec);
+
+				// base_task->computeTorques(base_task_torques);
+				// joint_task->computeTorques(joint_task_torques);
+				// command_torques.head(10) = base_task_torques + joint_task_torques;
+
+				// q_gripper_desired << -0.05, 0.05;
+				// gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+				// command_torques.tail(2) = gripper_command_torques;
+
+				//state = START_POS;
 			}
 
 
