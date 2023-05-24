@@ -38,7 +38,9 @@ enum State
 {
 	BASE = 0, 
 	HAND = 1,
-	LOWERHAND = 2
+	LOWERHAND = 2,
+	GRASP = 3,
+	LIFT = 4
 };
 
 int main() {
@@ -237,12 +239,11 @@ int main() {
 
 				if ( (ee_pos - aboveBallPos).norm() < 0.005 ) {
 					state = LOWERHAND;
-					cout<<"lowerhand";
 				}
 
 			} else if(state == LOWERHAND){
 				//cout<<"grasp";
-				atBallHeight << -0.8, -.5, 0.445;
+				atBallHeight << -0.8, -.5, 0.35;
 				posori_task->reInitializeTask();
 				posori_task->_desired_position = atBallHeight;
 				posori_task->_desired_orientation = vert_orient;
@@ -264,12 +265,58 @@ int main() {
 
 				robot->position(ee_pos, control_link, control_point);
 
-				cout<< "\t" << ee_pos.transpose() << "\n";
+				//cout<< "\t" << ee_pos.transpose() << "\n";
 
 				if ( (ee_pos - atBallHeight).norm() < 0.01 ) {
-					cout<<"correct height";
+					state = GRASP;
 				}
+			} else if(state == GRASP){
+				
+				N_prec.setIdentity();
+				posori_task->updateTaskModel(N_prec);
+				N_prec = posori_task->_N;
+				base_task->updateTaskModel(N_prec);
+				N_prec = base_task->_N;	
+			  joint_task->updateTaskModel(N_prec);
+
+				posori_task->computeTorques(posori_task_torques);
+				base_task->computeTorques(base_task_torques);
+				joint_task->computeTorques(joint_task_torques);
+				command_torques.head(10) = posori_task_torques + joint_task_torques + base_task_torques;
+			
+				q_gripper_desired << -0.05, 0.05;
+				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+				command_torques.tail(2) = gripper_command_torques;
+
+				//cout << (q_gripper).transpose() << "\n";
+
+				if ( q_gripper(1)<.12 ) {
+					state = LIFT;
+				}
+
+			} else if(state == LIFT){
+
+				posori_task->reInitializeTask();
+				posori_task->_desired_position = aboveBallPos;
+				posori_task->_desired_orientation = vert_orient;
+
+				N_prec.setIdentity();
+				posori_task->updateTaskModel(N_prec);
+				N_prec = posori_task->_N;
+				base_task->updateTaskModel(N_prec);
+				N_prec = base_task->_N;	
+			  joint_task->updateTaskModel(N_prec);
+
+				posori_task->computeTorques(posori_task_torques);
+				base_task->computeTorques(base_task_torques);
+				joint_task->computeTorques(joint_task_torques);
+				command_torques.head(10) = posori_task_torques + joint_task_torques + base_task_torques;
+				
+				q_gripper_desired << -0.05, 0.05;
+				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+				command_torques.tail(2) = gripper_command_torques;
 			}
+
 
 			// execute redis write callback
 			redis_client.executeWriteCallback(0);	
