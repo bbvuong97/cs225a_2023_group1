@@ -43,7 +43,8 @@ enum State
 	LIFT = 4,
 	RETURNTOCENTER = 5,
 	KEYPRESSMVT = 6,
-	CAMERAMVT = 7
+	CAMERAMVT = 7,
+	BALLRELEASE = 8
 };
 
 int main() {
@@ -116,6 +117,8 @@ int main() {
 	q_init_desired *= M_PI/180.0; //arm joints in radians
 	//qdot_init_desired << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
 	joint_task->_desired_position = q_init_desired;
+	VectorXd desired_q_throwing(7);
+	desired_q_throwing << 0.0, -15.0, -15.0, -105.0, 0.0, 90.0, 45.0; 
 	//joint_task->_desired_velocity = qdot_init_desired;
 
 
@@ -142,6 +145,7 @@ int main() {
 	base_pose_desired << -.25, -.25, 0;
 	base_pose_center << 0, 0, 0;
 	base_task->_desired_position = base_pose_desired;
+	double desired_base_x = 0;
 
 	// containers
 	Vector3d ee_pos;
@@ -390,24 +394,44 @@ int main() {
 
 				if (redis_client.get("SPACEPRESSED") == "1"){
 					state =  CAMERAMVT;
+					posori_task->reInitializeTask();
+					base_task->reInitializeTask();
+					
+					desired_base_x = robot->_q(0);
+					base_task->_desired_position.head(3) = robot->_q.head(3);
+					cout << "Move to state 7: CAMERAMVT \n" << endl;
 				}
 
 			} else if (state==CAMERAMVT){
 
-	
+				posori_task->_desired_position = Vector3d(desired_base_x,.3,1);
+				//joint_task->_desired_position = desired_q_throwing;
+
+				N_prec.setIdentity();
+				base_task->updateTaskModel(N_prec);
+				N_prec = base_task->_N;	
+				posori_task->updateTaskModel(N_prec);
+				//N_prec = posori_task->_N;
+			  //joint_task->updateTaskModel(N_prec);
+
+				posori_task->computeTorques(posori_task_torques);
+				base_task->computeTorques(base_task_torques);
+				joint_task->computeTorques(joint_task_torques);
+				command_torques.head(10) = posori_task_torques + joint_task_torques + base_task_torques;
 				
-				// N_prec.setIdentity();
-				// base_task->updateTaskModel(N_prec);
-				// N_prec = base_task->_N;	
-			  // joint_task->updateTaskModel(N_prec);
+				gripper_command_torques = Vector2d(20,-20);
+				command_torques.tail(2) = gripper_command_torques;
 
-				// base_task->computeTorques(base_task_torques);
-				// joint_task->computeTorques(joint_task_torques);
-				// command_torques.head(10) = base_task_torques + joint_task_torques;
-
-				// q_gripper_desired << -0.05, 0.05;
-				// gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
-				// command_torques.tail(2) = gripper_command_torques;
+				robot->position(ee_pos, control_link, control_point);
+				
+				if (abs(ee_pos(2)-1) <.005 ){
+					state = BALLRELEASE;
+					cout << "Move to state 8: BALL RELEASE \n" << endl;
+				}
+			} else if (state==BALLRELEASE){
+					q_gripper_desired << -0.15, 0.15;
+					gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+					command_torques.tail(2) = gripper_command_torques;
 			}
 
 

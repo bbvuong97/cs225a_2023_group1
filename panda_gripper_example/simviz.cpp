@@ -122,6 +122,7 @@ int main() {
 
     // set co-efficient of restition to zero for force control
     sim->setCollisionRestitution(0.0);
+		sim->setCollisionRestitution("ball",0.5);
 
     // set co-efficient of friction
     sim->setCoeffFrictionStatic(0.0);
