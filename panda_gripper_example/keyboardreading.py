@@ -10,6 +10,9 @@ def check_key_pressed(key):
     elif key == 'd': # move right
         r.set("MOVE_RIGHT", "1")
         print("\nThe 'd' key has been pressed!")
+    elif key == 'x':
+        r.set("SPACEPRESSED", "1")
+        print("\nThe 'x' key has been pressed!")
     else:
         print("\nInput not accepted.")
 

@@ -173,6 +173,7 @@ int main() {
   redis_client.set(CONTROLLER_LOOP_DONE_KEY, bool_to_string(fControllerLoopDone));
 
 	// start simulation thread
+	fSimulationRunning = true;
 	thread sim_thread(simulation, robot, sim);
 
 	// initialize glew
@@ -182,7 +183,7 @@ int main() {
 	int count = 0;
 	Vector3d start_pos = Vector3d(1, -1, 1);
 
-	fSimulationRunning = true;
+
 	while (!glfwWindowShouldClose(window) && fSimulationRunning)
 	{
 
@@ -321,7 +322,6 @@ void simulation(Sai2Model::Sai2Model* robot, Simulation::Sai2Simulation* sim)
 	double last_time = start_time;
 
 	// start simulation 
-	// fSimulationRunning = true;
 	while (fSimulationRunning) {
     // fTimerDidSleep = timer.waitForNextLoop(); // commented out to let current simulation loop finish before next loop
 

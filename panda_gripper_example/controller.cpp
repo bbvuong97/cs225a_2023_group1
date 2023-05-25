@@ -42,7 +42,8 @@ enum State
 	GRASP = 3,
 	LIFT = 4,
 	RETURNTOCENTER = 5,
-	KEYPRESSMVT = 6
+	KEYPRESSMVT = 6,
+	CAMERAMVT = 7
 };
 
 int main() {
@@ -56,6 +57,7 @@ int main() {
 	redis_client.connect();
 	redis_client.set("MOVE_LEFT","0");
 	redis_client.set("MOVE_RIGHT","0");
+	redis_client.set("SPACEPRESSED","0");
 
 	// set up signal handler
 	signal(SIGABRT, &sighandler);
@@ -386,7 +388,26 @@ int main() {
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 				command_torques.tail(2) = gripper_command_torques;
 
-				//state = START_POS;
+				if (redis_client.get("SPACEPRESSED") == "1"){
+					state =  CAMERAMVT;
+				}
+
+			} else if (state==CAMERAMVT){
+
+	
+				
+				// N_prec.setIdentity();
+				// base_task->updateTaskModel(N_prec);
+				// N_prec = base_task->_N;	
+			  // joint_task->updateTaskModel(N_prec);
+
+				// base_task->computeTorques(base_task_torques);
+				// joint_task->computeTorques(joint_task_torques);
+				// command_torques.head(10) = base_task_torques + joint_task_torques;
+
+				// q_gripper_desired << -0.05, 0.05;
+				// gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+				// command_torques.tail(2) = gripper_command_torques;
 			}
 
 
