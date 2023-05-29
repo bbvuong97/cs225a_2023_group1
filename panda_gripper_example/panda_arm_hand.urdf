@@ -217,6 +217,9 @@
         <geometry>
           <box size="0.1 .02 0.2" />
         </geometry>
+        <material name="material_red">
+            <color rgba="1.0 0.0 0.0 1.0" />
+        </material>
       </visual>   
     </link>
 
@@ -246,7 +249,72 @@
         <geometry>
           <box size="0.1 .02 0.2" />
         </geometry>
+        <material name="material_green">
+            <color rgba="0.0 1.0 0.0 1.0" />
+        </material>
       </visual>  
+    </link>
+
+    <link name="leftfinger_bottom">
+      <inertial>
+        <origin xyz="0 0 0.05" rpy="0 -0 0" />
+        <mass value=".75" />
+        <inertia ixx="0.01" iyy="0.01" izz="0.005" ixy="0" ixz="0" iyz="0" />
+      </inertial>
+      <visual>
+        <geometry>
+          <mesh filename="../../../model/panda/meshes/visual/finger.obj" scale="2 2 2"/>
+        </geometry>
+      </visual>
+
+       <collision>
+        <origin xyz="0 0 .1" rpy="0 0 0" />
+        <geometry>
+          <box size="0.1 .02 0.2" />
+        </geometry>
+      </collision> 
+
+      <visual>
+        <origin xyz="0 0 .1" rpy="0 0 0" />
+        <geometry>
+          <box size="0.1 .02 0.2" />
+        </geometry>
+        <material name="material_blue">
+            <color rgba="0.0 0.0 1.0 1.0" />
+        </material>
+      </visual>   
+    </link>
+
+
+    <link name="rightfinger_bottom">
+      <inertial>
+        <origin xyz="0 0 0.05" rpy="0 -0 0" />
+        <mass value="0.75" />
+        <inertia ixx="0.01" iyy="0.01" izz="0.005" ixy="0" ixz="0" iyz="0" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 3.14159265359" />
+        <geometry>
+          <mesh filename="../../../model/panda/meshes/visual/finger.obj" scale="2 2 2"/>
+        </geometry>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 .1" rpy="0 0 0" />
+        <geometry>
+          <box size="0.1 .02 0.2" />
+        </geometry>
+      </collision> 
+
+      <visual>
+        <origin xyz="0 0 .1" rpy="0 0 0" />
+        <geometry>
+          <box size="0.1 .02 0.2" />
+        </geometry>
+      </visual>  
+       <material name="material_yellow">
+            <color rgba="1.0 1.0 0.0 1.0" />
+        </material>
     </link>
 
     <!-- JOINTS -->
@@ -337,18 +405,33 @@
     <joint name="finger_joint1" type="prismatic">
       <parent link="link7"/>
       <child link="leftfinger"/>
-      <origin xyz="0 .08 0.1654" rpy="0 0 -0.98539816339"/>
+      <origin xyz="-.02 .03 0.1654" rpy="0 0 -1.08539816339"/>
       <axis xyz="0 1 0"/>
-      <calibration rising="0.04" />
+      <!-- <calibration rising="0.1" /> --> 
       <limit effort="20" lower="0.0" upper="0.04" velocity="0.2"/>
     </joint>
     <joint name="finger_joint2" type="prismatic">
       <parent link="link7"/>
       <child link="rightfinger"/>
-      <origin xyz="0 .08 0.1654" rpy="0 0 -0.58539816339"/>
+      <origin xyz=".02 .03 0.1654" rpy="0 0 -0.48539816339"/>
       <axis xyz="0 1 0"/>
-      <calibration rising="-0.04" />
+      <!-- <calibration rising="-0.1" /> -->
       <limit effort="20" lower="0.0" upper="0.04" velocity="0.2"/>
       <!-- <mimic joint="finger_joint1" /> -->
+    </joint>
+
+    <joint name="finger_joint3" type="prismatic">
+      <parent link="link7"/>
+      <child link="leftfinger_bottom"/>
+     <origin xyz="0.02 -.03 0.1654" rpy="0 0 -0.48539816339"/>
+      <axis xyz="0 1 0"/>
+      <limit effort="20" lower="0.0" upper="0.04" velocity="0.2"/>
+    </joint>
+    <joint name="finger_joint4" type="prismatic">
+      <parent link="link7"/>
+      <child link="rightfinger_bottom"/>
+      <origin xyz=".06 -.03 0.1654" rpy="0 0 -1.08539816339"/>
+      <axis xyz="0 1 0"/>
+      <limit effort="20" lower="0.0" upper="0.04" velocity="0.2"/>
     </joint>
 </robot>

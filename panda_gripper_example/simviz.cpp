@@ -127,10 +127,26 @@ int main() {
     // set co-efficient of friction
     sim->setCoeffFrictionStatic(0.0);
     sim->setCoeffFrictionDynamic(0.0);
-		sim->setCoeffFrictionStatic("ball",0.5);
-		sim->setCoeffFrictionDynamic("ball",0.5);
+		sim->setCoeffFrictionStatic("ball",0.05);
+		sim->setCoeffFrictionDynamic("ball",0.05);
 		sim->setCoeffFrictionStatic(robot_name,"leftfinger",.5);
 		sim->setCoeffFrictionDynamic(robot_name,"rightfinger",.5);
+		sim->setCoeffFrictionDynamic(robot_name,"leftfinger_bottom",.5);
+		sim->setCoeffFrictionDynamic(robot_name,"rightfinger_bottom",.5);
+
+		//sim->setCoeffFrictionStatic("Lane_ground",0.05);
+		//sim->setCoeffFrictionDynamic("Lane_ground",0.05);
+		// sim->setCoeffFrictionStatic("bowling_pin",0.05);
+		// sim->setCoeffFrictionStatic("bowling_pin2",0.05);
+		// sim->setCoeffFrictionStatic("bowling_pin3",0.05);
+		// sim->setCoeffFrictionStatic("bowling_pin4",0.05);
+		// sim->setCoeffFrictionStatic("bowling_pin5",0.05);
+		// sim->setCoeffFrictionStatic("bowling_pin6",0.05);
+		// sim->setCoeffFrictionStatic("bowling_pin7",0.05);
+		// sim->setCoeffFrictionStatic("bowling_pin8",0.05);
+		// sim->setCoeffFrictionStatic("bowling_pin9",0.05);
+		// sim->setCoeffFrictionStatic("bowling_pin10",0.05);
+
 
 	/*------- Set up visualization -------*/
 	// set up error callback
@@ -296,7 +312,7 @@ void simulation(Sai2Model::Sai2Model* robot, Simulation::Sai2Simulation* sim)
 	VectorXd g = VectorXd::Zero(dof);
 	string controller_status = "0";
 	double kv = 10;  // can be set to 0 if no damping is needed
-	VectorXd panda_q(10), panda_dq(10), gripper_q(2), gripper_dq(2);
+	VectorXd panda_q(10), panda_dq(10), gripper_q(4), gripper_dq(4);
 
 	// setup redis callback
 	redis_client.createReadCallback(0);
@@ -362,8 +378,8 @@ void simulation(Sai2Model::Sai2Model* robot, Simulation::Sai2Simulation* sim)
 
 				panda_q = robot->_q.head(10);
 				panda_dq = robot->_dq.head(10);
-				gripper_q = robot->_q.tail(2);
-				gripper_dq = robot->_dq.tail(2);
+				gripper_q = robot->_q.tail(4);
+				gripper_dq = robot->_dq.tail(4);
 
 				// get dynamic object positions
 				for (int i = 0; i < n_objects; ++i) {

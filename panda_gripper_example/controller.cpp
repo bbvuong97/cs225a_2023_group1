@@ -45,9 +45,10 @@ enum State
 	GRASP = 3,
 	LIFT = 4,
 	RETURNTOCENTER = 5,
-	KEYPRESSMVT = 6,
-	START_POS = 7,
-	POS_TRACK = 8
+	TURN180 = 6,
+	KEYPRESSMVT = 7,
+	START_POS = 8,
+	POS_TRACK = 9
 };
 
 int main() {
@@ -78,12 +79,11 @@ int main() {
 
 	//robot->_dq.head(7) = redis_client.getEigenMatrixJSON(JOINT_VELOCITIES_KEY);
 	robot->_dq = redis_client.getEigenMatrixJSON(JOINT_VELOCITIES_KEY);
-	cout << "\t joints" << robot->_q.transpose() << "\n";
 	robot->updateModel();
 
 	// prepare controller
 	int dof = robot->dof();
-	VectorXd command_torques = VectorXd::Zero(dof + 2);  // panda + gripper torques 
+	VectorXd command_torques = VectorXd::Zero(dof + 4);  // panda + gripper torques 
 	MatrixXd N_prec = MatrixXd::Identity(dof, dof);
 
 	// pose task
@@ -121,17 +121,18 @@ int main() {
 
 	q_init_desired << 180.0, -15.0, -15.0, -105.0, 0.0, 90.0, 45.0; //*set init config
 	q_init_desired *= M_PI/180.0; //arm joints in radians
-	//qdot_init_desired << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+	qdot_init_desired << 0, 0, 0, 0, 0, 0, 0;
 	joint_task->_desired_position = q_init_desired;
 	VectorXd desired_q_throwing(7);
 	desired_q_throwing << 0.0, -15.0, -15.0, -105.0, 0.0, 90.0, 45.0; 
+	desired_q_throwing *= M_PI/180.0;
 	//joint_task->_desired_velocity = qdot_init_desired;
 
 
 	// gripper task containers
-	VectorXd gripper_command_torques(2);
-	VectorXd q_gripper(2), dq_gripper(2);
-	VectorXd q_gripper_desired(2);
+	VectorXd gripper_command_torques(4);
+	VectorXd q_gripper(4), dq_gripper(4);
+	VectorXd q_gripper_desired(4);
 	q_gripper_desired.setZero();
 	double kp_gripper = 100;
 	double kv_gripper = 20;
@@ -221,7 +222,7 @@ int main() {
 				command_torques.head(10) = base_task_torques + joint_task_torques;
 
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
-				command_torques.tail(2) = gripper_command_torques;
+				command_torques.tail(4) = gripper_command_torques;
 
 				if ( (robot->_q.head(3) - base_pose_desired).norm() < 0.005 ) {
 	
@@ -231,8 +232,6 @@ int main() {
 					//posori_task->_desired_position = Vector3d(-0.8, -.5, 0.745); //*desired end effector position
 					//posori_task->_desired_orientation = vert_orient; //*desired orientation
 					// posori_task->_desired_orientation = AngleAxisd(0.0000000000000001, Vector3d::UnitX()).toRotationMatrix() * posori_task->_desired_orientation;
-					q_gripper_desired << -0.15, 0.15; //*distance between end effectors
-
 					state = HAND;
 				}
 			} else if (state == HAND) {
@@ -260,8 +259,9 @@ int main() {
 				joint_task->computeTorques(joint_task_torques);
 				command_torques.head(10) = posori_task_torques + joint_task_torques + base_task_torques;
 
+				q_gripper_desired << -0.12, 0.12, -0.12, 0.12; //*distance between end effectors
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
-				command_torques.tail(2) = gripper_command_torques;
+				command_torques.tail(4) = gripper_command_torques;
 
 				robot->position(ee_pos, control_link, control_point);
 
@@ -290,7 +290,7 @@ int main() {
 				command_torques.head(10) = posori_task_torques + joint_task_torques + base_task_torques;
 				
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
-				command_torques.tail(2) = gripper_command_torques;
+				command_torques.tail(4) = gripper_command_torques;
 
 				robot->position(ee_pos, control_link, control_point);
 
@@ -316,8 +316,8 @@ int main() {
 			
 				//q_gripper_desired << -0.05, 0.05;
 				//gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
-				gripper_command_torques = Vector2d(15,-15);
-				command_torques.tail(2) = gripper_command_torques;
+				gripper_command_torques << 10,-10, 10, -10;
+				command_torques.tail(4) = gripper_command_torques;
 				//cout<< "\t" << gripper_command_torques.transpose() << "\n";
 
 				//cout << (q_gripper).transpose() << "\n";
@@ -347,9 +347,9 @@ int main() {
 				
 				//q_gripper_desired << -0.05, 0.05;
 				//gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
-				gripper_command_torques = Vector2d(15,-15);
+				gripper_command_torques << 10,-10, 10, -10;
 				//cout<< "\t" << gripper_command_torques.transpose() << "\n";
-				command_torques.tail(2) = gripper_command_torques;
+				command_torques.tail(4) = gripper_command_torques;
 
 				robot->position(ee_pos, control_link, control_point);
 
@@ -374,15 +374,39 @@ int main() {
 				joint_task->computeTorques(joint_task_torques);
 				command_torques.head(10) = base_task_torques + joint_task_torques;
 
-				q_gripper_desired << -0.05, 0.05;
+				q_gripper_desired << -0.03, 0.03, -0.03, 0.03;
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
-				command_torques.tail(2) = gripper_command_torques;
+				command_torques.tail(4) = gripper_command_torques;
 
 				if ( (robot->_q.head(3) - base_pose_center).norm() < 0.005 ) {
-						state = KEYPRESSMVT;
-						cout << "Move to state 6: KEYPRESS \n" << endl;
-						base_task->reInitializeTask();
+						state = TURN180;
+						cout << "Move to state 6: TURN180 \n" << endl;
 				}
+
+			} else if(state == TURN180){
+				joint_task->_desired_position = desired_q_throwing;
+				//joint_task->_desired_velocity = qdot_init_desired;
+				//posori_task->_desired_orientation = vert_orient;
+				
+				N_prec.setIdentity();
+				base_task->updateTaskModel(N_prec);
+				N_prec = base_task->_N;	
+			  joint_task->updateTaskModel(N_prec);
+		
+				base_task->computeTorques(base_task_torques);
+				joint_task->computeTorques(joint_task_torques);
+				command_torques.head(10) = base_task_torques + joint_task_torques;
+
+				q_gripper_desired << -0.03, 0.03, -0.03, 0.03;
+				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+				command_torques.tail(4) = gripper_command_torques;
+
+				if ((robot->_q.segment(3,7) - desired_q_throwing).norm()<.005){
+					state = KEYPRESSMVT;
+					base_task->reInitializeTask();
+					cout << "Move to state 7: KEYPRESSMVT \n" << endl;
+				}
+
 			} else if (state==KEYPRESSMVT){
 
 				base_task->_desired_position(1) = 0;
@@ -406,9 +430,9 @@ int main() {
 				joint_task->computeTorques(joint_task_torques);
 				command_torques.head(10) = base_task_torques + joint_task_torques;
 
-				q_gripper_desired << -0.05, 0.05;
+				q_gripper_desired << -0.03, 0.03, -0.03, 0.03;
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
-				command_torques.tail(2) = gripper_command_torques;
+				command_torques.tail(4) = gripper_command_torques;
 
 				if (redis_client.get("NEXT_STATE") == "1"){
 					redis_client.set("NEXT_STATE","0");
@@ -418,7 +442,7 @@ int main() {
 					
 					desired_base_x = robot->_q(0);
 					base_task->_desired_position.head(3) = robot->_q.head(3);
-					cout << "Move to state 7: START_POS \n" << endl;
+					cout << "Move to state 8: START_POS \n" << endl;
 				}
 
 			} else if (state==START_POS){
@@ -431,9 +455,9 @@ int main() {
 					state = POS_TRACK;
 				}
 
-				q_gripper_desired << -0.05, 0.05;
+				q_gripper_desired << -0.03, 0.03, -0.03, 0.03;
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
-				command_torques.tail(2) = gripper_command_torques;
+				command_torques.tail(4) = gripper_command_torques;
 
 			// 	if (abs(ee_pos(2)-1) <.005 ){
 			// 		state = BALLRELEASE;
@@ -487,9 +511,9 @@ int main() {
 				// robot->position(ee_pos, control_link, control_point);
 				//
 
-				q_gripper_desired << -0.05, 0.05;
+				q_gripper_desired << -0.1, 0.1, -0.1, 0.1;
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
-				command_torques.tail(2) = gripper_command_torques;
+				command_torques.tail(4) = gripper_command_torques;
 			}
 
 
