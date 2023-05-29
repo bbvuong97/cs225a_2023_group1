@@ -129,10 +129,10 @@ int main() {
     sim->setCoeffFrictionDynamic(0.0);
 		sim->setCoeffFrictionStatic("ball",0.05);
 		sim->setCoeffFrictionDynamic("ball",0.05);
-		sim->setCoeffFrictionStatic(robot_name,"leftfinger",.5);
-		sim->setCoeffFrictionDynamic(robot_name,"rightfinger",.5);
-		sim->setCoeffFrictionDynamic(robot_name,"leftfinger_bottom",.5);
-		sim->setCoeffFrictionDynamic(robot_name,"rightfinger_bottom",.5);
+		sim->setCoeffFrictionStatic(robot_name,"leftfinger",.8);
+		sim->setCoeffFrictionDynamic(robot_name,"rightfinger",.8);
+		sim->setCoeffFrictionDynamic(robot_name,"leftfinger_bottom",.8);
+		sim->setCoeffFrictionDynamic(robot_name,"rightfinger_bottom",.8);
 
 		//sim->setCoeffFrictionStatic("Lane_ground",0.05);
 		//sim->setCoeffFrictionDynamic("Lane_ground",0.05);

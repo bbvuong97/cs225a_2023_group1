@@ -124,7 +124,7 @@ int main() {
 	qdot_init_desired << 0, 0, 0, 0, 0, 0, 0;
 	joint_task->_desired_position = q_init_desired;
 	VectorXd desired_q_throwing(7);
-	desired_q_throwing << 0.0, -15.0, -15.0, -105.0, 0.0, 90.0, 45.0; 
+	desired_q_throwing << 0.0, -15.0, -50.0, -105.0, 0.0, 90.0, 45.0; 
 	desired_q_throwing *= M_PI/180.0;
 	//joint_task->_desired_velocity = qdot_init_desired;
 
@@ -388,6 +388,9 @@ int main() {
 				//joint_task->_desired_velocity = qdot_init_desired;
 				//posori_task->_desired_orientation = vert_orient;
 				
+				joint_task->_use_velocity_saturation_flag = true;
+				joint_task->_saturation_velocity << 1.1,1.1,1.1,1.1,1.1,1.1,1.1;  // adjust based on speed
+
 				N_prec.setIdentity();
 				base_task->updateTaskModel(N_prec);
 				N_prec = base_task->_N;	
@@ -401,9 +404,10 @@ int main() {
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 				command_torques.tail(4) = gripper_command_torques;
 
-				if ((robot->_q.segment(3,7) - desired_q_throwing).norm()<.005){
+				if (abs(robot->_q(3)-desired_q_throwing(0))<.01){
 					state = KEYPRESSMVT;
 					base_task->reInitializeTask();
+					joint_task->_use_velocity_saturation_flag = false;
 					cout << "Move to state 7: KEYPRESSMVT \n" << endl;
 				}
 
@@ -438,7 +442,7 @@ int main() {
 					redis_client.set("NEXT_STATE","0");
 					state =  START_POS;
 					posori_task->reInitializeTask();
-					base_task->reInitializeTask();
+					//base_task->reInitializeTask();
 					
 					desired_base_x = robot->_q(0);
 					base_task->_desired_position.head(3) = robot->_q.head(3);
