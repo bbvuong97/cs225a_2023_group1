@@ -49,7 +49,9 @@ enum State
 	KEYPRESSMVT = 7,
 	START_POS = 8,
 	POS_TRACK = 9,
-	RELEASE_BALL = 10
+	RELEASE_BALL = 10,
+	RETURN_HOME_ARM = 11,
+	RETURN_HOME_BASE = 12
 };
 
 int main() {
@@ -167,6 +169,7 @@ int main() {
 	double y;
 	double z;
 	auto start = std::chrono::high_resolution_clock::now();
+	auto releasetimer_start = std::chrono::high_resolution_clock::now();
 
 	// containers
 	Vector3d ee_pos;
@@ -471,14 +474,6 @@ int main() {
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 				command_torques.tail(4) = gripper_command_torques;
 
-			// 	if (abs(ee_pos(2)-1) <.005 ){
-			// 		state = BALLRELEASE;
-			// 		cout << "Move to state 8: BALL RELEASE \n" << endl;
-			// 	}
-			// } else if (state==BALLRELEASE){
-			// 		q_gripper_desired << -0.15, 0.15;
-			// 		gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
-			// 		command_torques.tail(2) = gripper_command_torques;
 			} else if (state==POS_TRACK){
 
 					auto end = std::chrono::high_resolution_clock::now();
@@ -530,6 +525,7 @@ int main() {
 						if (abs(ee_pos(2)-desired_z)<=.005){
 							state = RELEASE_BALL;
 							cout << "Move to state 10: RELEASE_BALL\n" << endl;
+							releasetimer_start = std::chrono::high_resolution_clock::now();
 						}
 					}
 			} else if (state==RELEASE_BALL){
@@ -541,6 +537,59 @@ int main() {
 					command_torques.head(10) = posori_task_torques + base_task_torques + joint_task_torques;
 						
 					q_gripper_desired << -0.12, 0.12, -0.12, 0.12;
+					gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+					command_torques.tail(4) = gripper_command_torques;
+
+					auto releasetimer_end = std::chrono::high_resolution_clock::now();
+					auto releasetimer_duration = std::chrono::duration_cast<std::chrono::milliseconds>(releasetimer_end - releasetimer_start).count();
+
+					if (releasetimer_duration>=3000){
+						state = RETURN_HOME_ARM;
+						cout << "Move to state 11: RETURN_HOME_ARM\n" << endl;
+
+						joint_task->reInitializeTask();
+						joint_task->_desired_position = q_init_desired;
+						//joint_task->_desired_position(0) = 0;
+						base_task->_desired_position = robot->_q.head(3);
+					}
+
+			} else if (state==RETURN_HOME_ARM){
+
+					N_prec.setIdentity();
+					base_task->updateTaskModel(N_prec);
+					N_prec = base_task->_N;	
+			  	joint_task->updateTaskModel(N_prec);
+
+					base_task->computeTorques(base_task_torques);
+					joint_task->computeTorques(joint_task_torques);
+
+					command_torques.head(10) = base_task_torques + joint_task_torques;
+						
+					q_gripper_desired << -0.0, 0.0, -0.0, 0.0;
+					gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+					command_torques.tail(4) = gripper_command_torques;
+
+					if ( (robot->_q.segment(3,7) - q_init_desired).norm() < 0.005 ) {
+						state = RETURN_HOME_BASE;
+						cout << "Move to state 12: RETURN_HOME_BASE\n" << endl;
+
+						base_task->reInitializeTask();
+						base_task->_desired_position = base_pose_center;
+					}
+
+			} else if (state==RETURN_HOME_BASE){
+
+					N_prec.setIdentity();
+					base_task->updateTaskModel(N_prec);
+					N_prec = base_task->_N;	
+			  	joint_task->updateTaskModel(N_prec);
+
+					// compute torques
+					base_task->computeTorques(base_task_torques);
+					joint_task->computeTorques(joint_task_torques);
+					command_torques.head(10) = base_task_torques + joint_task_torques;
+
+					q_gripper_desired << -0.0, 0.0, -0.0, 0.0;
 					gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 					command_torques.tail(4) = gripper_command_torques;
 			} 
