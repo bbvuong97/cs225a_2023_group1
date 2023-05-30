@@ -158,7 +158,7 @@ int main() {
 	Vector3d ee_pos_init = Vector3d::Zero(3);
 	Vector3d zero_offset = Vector3d::Zero(3);
 	Vector3d centroid_vec = Vector3d::Zero(3);
-	const double scale_factor = .0001;
+	const double scale_factor = .001;
 	int cameracounter = 0;
 	double y_offset;
 	double z_offset;
@@ -420,6 +420,7 @@ int main() {
 					base_task->_desired_position(0) -= 0.1;
 					redis_client.set("MOVE_LEFT", "0");
 				}
+
 				if (redis_client.get("MOVE_RIGHT") == "1"){
 					base_task->_desired_position(0) += 0.1;
 					redis_client.set("MOVE_RIGHT", "0");
@@ -457,6 +458,11 @@ int main() {
 					redis_client.set("START_TRACKING","0");
 					cameracounter++;
 					state = POS_TRACK;
+					base_pose_desired = robot->_q.head(3);
+
+					posori_task->reInitializeTask();
+					
+					cout << "Move to state 9: POS_TRACK\n" << endl;
 				}
 
 				q_gripper_desired << -0.03, 0.03, -0.03, 0.03;
@@ -473,27 +479,48 @@ int main() {
 			// 		command_torques.tail(2) = gripper_command_torques;
 			} else if (state==POS_TRACK){
 
-				auto end = std::chrono::high_resolution_clock::now();
-				auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+					auto end = std::chrono::high_resolution_clock::now();
+					auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-				if (duration >= 2000)
-				{
-				y = std::stod(redis_client.get("Y_Centroid"));
-				z = std::stod(redis_client.get("Z_Centroid"));
-				}
+					if (duration >= 2000)
+					{
+						y = std::stod(redis_client.get("Y_Centroid"));
+						z = std::stod(redis_client.get("Z_Centroid"));
+						centroid_vec << 0, y, -1*z;
+						zero_offset << 0, y_offset, -1*z_offset;
+						
+						if (counter == 1)
+						{
+							robot->position(ee_pos_init, control_link, control_point);
+							// cout << "EE X: " << ee_pos_init(0) << "\n";
+							// cout << "EE Y: " << ee_pos_init(1)<< "\n";
+							// cout << "EE Z: " << ee_pos_init(2)<< "\n";
+							cout << "ee_pos_init" << ee_pos_init.transpose() <<"\n";
+							//counter++;
+						}
+						
+						N_prec.setIdentity();
+						base_task->updateTaskModel(N_prec);
+						N_prec = base_task->_N;	
+						posori_task->updateTaskModel(N_prec);
+						N_prec = posori_task->_N;
+						joint_task->updateTaskModel(N_prec);
 
-				centroid_vec << 0, y, z;
-				zero_offset << 0, y_offset, z_offset;
-				
-				if (cameracounter==1){
-					robot->position(ee_pos_init, control_link, control_point);
-					//do we need cameracounter++?
-				}
+						base_task->_desired_position = base_pose_desired;
+						posori_task->_desired_position = ee_pos_init + ((centroid_vec - zero_offset) * scale_factor);
 
-				posori_task->updateTaskModel(N_prec);
-				posori_task->_desired_position = ee_pos_init + ((centroid_vec - zero_offset) * scale_factor);
-				posori_task->computeTorques(posori_task_torques);
-				command_torques = posori_task_torques;
+						cout << "Difference: " << (centroid_vec - zero_offset).transpose() << "\n";
+
+						posori_task->computeTorques(posori_task_torques);
+						base_task->computeTorques(base_task_torques);
+						joint_task->computeTorques(joint_task_torques);
+
+						command_torques.head(10) = posori_task_torques + base_task_torques + joint_task_torques;
+
+						q_gripper_desired << -0.03, 0.03, -0.03, 0.03;
+						gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+						command_torques.tail(4) = gripper_command_torques;
+					}
 				//
 				// posori_task->_desired_position = Vector3d(desired_base_x,.3,1);
 
@@ -515,9 +542,9 @@ int main() {
 				// robot->position(ee_pos, control_link, control_point);
 				//
 
-				q_gripper_desired << -0.1, 0.1, -0.1, 0.1;
-				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
-				command_torques.tail(4) = gripper_command_torques;
+				// q_gripper_desired << -0.03, 0.03, -0.03, 0.03;
+				// gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+				// command_torques.tail(4) = gripper_command_torques;
 			}
 
 
