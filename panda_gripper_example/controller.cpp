@@ -407,6 +407,7 @@ int main() {
 
 				q_gripper_desired << -0.03, 0.03, -0.03, 0.03;
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+				//cout<<"gripper torques" << gripper_command_torques.transpose() << "\n";
 				command_torques.tail(4) = gripper_command_torques;
 
 				if (abs(robot->_q(3)-desired_q_throwing(0))<.01){
