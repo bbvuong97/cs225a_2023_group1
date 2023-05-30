@@ -69,6 +69,7 @@ int main() {
 	redis_client.set("START_TRACKING","0");
 	redis_client.set("Y_Centroid","0");
 	redis_client.set("Z_Centroid","0");
+	redis_client.set(CHANGE_BALL_RESTITUTION_KEY, "false");
 
 	// set up signal handler
 	signal(SIGABRT, &sighandler);
@@ -405,7 +406,8 @@ int main() {
 				joint_task->computeTorques(joint_task_torques);
 				command_torques.head(10) = base_task_torques + joint_task_torques;
 
-				q_gripper_desired << -0.03, 0.03, -0.03, 0.03;
+				//q_gripper_desired << -0.03, 0.03, -0.03, 0.03;
+				q_gripper_desired.setZero(4);
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 				//cout<<"gripper torques" << gripper_command_torques.transpose() << "\n";
 				command_torques.tail(4) = gripper_command_torques;
@@ -552,7 +554,10 @@ int main() {
 						joint_task->_desired_position = q_init_desired;
 						//joint_task->_desired_position(0) = 0;
 						base_task->_desired_position = robot->_q.head(3);
+
+						redis_client.set(CHANGE_BALL_RESTITUTION_KEY, "true");
 					}
+
 
 			} else if (state==RETURN_HOME_ARM){
 

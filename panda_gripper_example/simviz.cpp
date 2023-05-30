@@ -122,13 +122,13 @@ int main() {
 
     // set co-efficient of restition to zero for force control
     sim->setCollisionRestitution(0.0);
-		sim->setCollisionRestitution("ball",0.5);
+		sim->setCollisionRestitution("ball",0.0);
 
     // set co-efficient of friction
     sim->setCoeffFrictionStatic(0.0);
     sim->setCoeffFrictionDynamic(0.0);
-		sim->setCoeffFrictionStatic("ball",0.05);
-		sim->setCoeffFrictionDynamic("ball",0.05);
+		sim->setCoeffFrictionStatic("ball",0.5);
+		sim->setCoeffFrictionDynamic("ball",0.5);
 		sim->setCoeffFrictionStatic(robot_name,"leftfinger",.8);
 		sim->setCoeffFrictionDynamic(robot_name,"rightfinger",.8);
 		sim->setCoeffFrictionDynamic(robot_name,"leftfinger_bottom",.8);
@@ -188,6 +188,7 @@ int main() {
 	redis_client.setEigenMatrixJSON(JOINT_VELOCITIES_KEY, robot->_dq.head(10));
 	redis_client.set(SIMULATION_LOOP_DONE_KEY, bool_to_string(fSimulationLoopDone));
   redis_client.set(CONTROLLER_LOOP_DONE_KEY, bool_to_string(fControllerLoopDone));
+	redis_client.set(CHANGE_BALL_RESTITUTION_KEY, "false");
 
 	// start simulation thread
 	fSimulationRunning = true;
@@ -337,6 +338,7 @@ void simulation(Sai2Model::Sai2Model* robot, Simulation::Sai2Simulation* sim)
 	bool fTimerDidSleep = true;
 	double start_time = timer.elapsedTime();
 	double last_time = start_time;
+	bool change_ball_restitution = false;
 
 	// start simulation 
 	while (fSimulationRunning) {
@@ -346,6 +348,13 @@ void simulation(Sai2Model::Sai2Model* robot, Simulation::Sai2Simulation* sim)
 		if(fControllerLoopDone) {
 				// execute redis read callback
 				redis_client.executeReadCallback(0);
+
+				change_ball_restitution = string_to_bool(redis_client.get(CHANGE_BALL_RESTITUTION_KEY));
+
+				if (change_ball_restitution){
+					sim->setCollisionRestitution("ball", 1.0);
+					redis_client.set(CHANGE_BALL_RESTITUTION_KEY, "false");
+				}
 
 				// apply gravity compensation 
 				robot->gravityVector(g);
