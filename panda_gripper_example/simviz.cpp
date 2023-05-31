@@ -24,6 +24,7 @@ bool fControllerLoopDone = true; // initialize as true for first loop
 
 using namespace std;
 using namespace Eigen;
+using namespace chai3d;
 
 // specify urdf and robots 
 const string world_file = "./resources/world.urdf";
@@ -32,6 +33,7 @@ const string robot_name = "panda_arm_hand";
 const string camera_name = "camera_fixed";
 const string base_link_name = "link0";
 const string ee_link_name = "link7";
+const string audio_file = "/Users/melissakl/Documents/sai2/apps/cs225a_2023_group1/panda_gripper_example/WiiBowling.wav";
 
 // dynamic objects information
 //const vector<string> object_names = {"ball","bowling_pin","bowling_pin2"};
@@ -96,6 +98,37 @@ int main() {
 	graphics->_world->setBackgroundColor(66.0/255, 135.0/255, 245.0/255);  // set blue background 	
 	//graphics->showLinkFrame(true, robot_name, ee_link_name, 0.15);  // can add frames for different links
 	graphics->getCamera(camera_name)->setClippingPlanes(0.1, 50);  // set the near and far clipping planes 
+
+	//AUDIO//
+	// create an audio device to play sounds
+	cAudioDevice* audioDevice = new cAudioDevice;
+	cAudioBuffer* audioBuffer = new cAudioBuffer;
+	cAudioSource* audioSource = new cAudioSource;
+	// show robot control frame
+	// for (unsigned int i = 0; i < graphics->_world->getNumChildren(); ++i) {
+	// 	if (camera_name == graphics->_world->getChild(i)->m_name) {
+	// 	// attach audio device to camera
+	// 	graphics->_world->getChild(i)->attachAudioDevice(audioDevice);
+	// 	}
+	// }
+	graphics->getCamera(camera_name)->attachAudioDevice(audioDevice);
+	// create an audio buffer
+	//cAudioBuffer* audioBuffer = audioDevice->newAudioBuffer();
+	// load a WAV file
+	audioBuffer->loadFromFile(audio_file);
+	// create an audio source
+	//cAudioSource* audioSource = audioDevice->newAudioSource();
+	// assign audio buffer to audio source
+	audioSource->setAudioBuffer(audioBuffer);
+	// loop playing of sound
+	audioSource->setLoop(true);
+	// set audio gain
+	audioSource->setGain(1.0);
+	// set audio pitch
+	audioSource->setPitch(0.2);
+	// play sound
+	audioSource->play();
+	//AUDIO//
 
 	// load robots
 	auto robot = new Sai2Model::Sai2Model(robot_file, false);
@@ -169,7 +202,7 @@ int main() {
 
 	// create window and make it current
 	glfwWindowHint(GLFW_VISIBLE, 0);
-	GLFWwindow* window = glfwCreateWindow(windowW, windowH, "Panda With Gripper Example", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(windowW, windowH, "RoboBowl", NULL, NULL);
 	glfwSetWindowPos(window, windowPosX, windowPosY);
 	glfwShowWindow(window);
 	glfwMakeContextCurrent(window);
@@ -353,6 +386,10 @@ void simulation(Sai2Model::Sai2Model* robot, Simulation::Sai2Simulation* sim)
 
 				if (change_ball_restitution){
 					sim->setCollisionRestitution("ball", 1.0);
+
+					sim->setCoeffFrictionStatic("ball",0.001);
+					sim->setCoeffFrictionDynamic("ball",0.001);
+					
 					redis_client.set(CHANGE_BALL_RESTITUTION_KEY, "false");
 				}
 

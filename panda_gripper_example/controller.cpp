@@ -137,7 +137,6 @@ int main() {
 	VectorXd gripper_command_torques(4);
 	VectorXd q_gripper(4), dq_gripper(4);
 	VectorXd q_gripper_desired(4);
-	q_gripper_desired.setZero();
 	double kp_gripper = 100;
 	double kv_gripper = 20;
 
@@ -157,7 +156,8 @@ int main() {
 	base_pose_center << 0, 0, 0;
 	base_task->_desired_position = base_pose_desired;
 	double desired_base_x = 0;
-	double desired_z = .75;
+	double max_z_arm = .78;
+	double max_y_arm = .5;
 
 	//camera state variables
 	Vector3d ee_pos_init = Vector3d::Zero(3);
@@ -227,6 +227,7 @@ int main() {
 				joint_task->computeTorques(joint_task_torques);
 				command_torques.head(10) = base_task_torques + joint_task_torques;
 
+				q_gripper_desired << -.12, .12, -.12, .12;
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 				command_torques.tail(4) = gripper_command_torques;
 
@@ -235,18 +236,10 @@ int main() {
 					cout << "Move to state 1: HAND \n" << endl;
 					joint_task->reInitializeTask();
 					posori_task->reInitializeTask();
-					//posori_task->_desired_position = Vector3d(-0.8, -.5, 0.745); //*desired end effector position
-					//posori_task->_desired_orientation = vert_orient; //*desired orientation
-					// posori_task->_desired_orientation = AngleAxisd(0.0000000000000001, Vector3d::UnitX()).toRotationMatrix() * posori_task->_desired_orientation;
 					state = HAND;
 				}
 			} else if (state == HAND) {
-				// update task model and set hierarchy
-				//joint_task->reInitializeTask();
-				//posori_task->reInitializeTask();
-				//base_task->reInitializeTask();
-				//robot->position(ee_pos, control_link, control_point);
-
+			
 				aboveBallPos << -0.8, -.5, 0.745;
 				posori_task->_desired_position = aboveBallPos;
 				posori_task->_desired_orientation = vert_orient;
@@ -300,8 +293,6 @@ int main() {
 
 				robot->position(ee_pos, control_link, control_point);
 
-				//cout<< "\t" << ee_pos.transpose() << "\n";
-
 				if ( (ee_pos - atBallHeight).norm() < 0.01 ) {
 					state = GRASP;
 					cout << "Move to state 3: GRASP \n" << endl;
@@ -320,15 +311,15 @@ int main() {
 				joint_task->computeTorques(joint_task_torques);
 				command_torques.head(10) = posori_task_torques + joint_task_torques + base_task_torques;
 			
-				//q_gripper_desired << -0.05, 0.05;
-				//gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
-				gripper_command_torques << 10,-10, 10, -10;
+				q_gripper_desired.setZero();
+				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+				//gripper_command_torques << 10,-10, 10, -10;
 				command_torques.tail(4) = gripper_command_torques;
 				//cout<< "\t" << gripper_command_torques.transpose() << "\n";
 
-				//cout << (q_gripper).transpose() << "\n";
+				cout << "gripper joints "<< (q_gripper).transpose() << "\n";
 
-				if ( q_gripper(1)<.12 ) {
+				if ( (q_gripper(2)-q_gripper(1))<.23 ) {
 					state = LIFT;
 					cout << "Move to state 4: LIFT \n" << endl;
 				}
@@ -351,9 +342,9 @@ int main() {
 				joint_task->computeTorques(joint_task_torques);
 				command_torques.head(10) = posori_task_torques + joint_task_torques + base_task_torques;
 				
-				//q_gripper_desired << -0.05, 0.05;
-				//gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
-				gripper_command_torques << 10,-10, 10, -10;
+				q_gripper_desired.setZero();
+				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
+				//gripper_command_torques << 10,-10, 10, -10;
 				//cout<< "\t" << gripper_command_torques.transpose() << "\n";
 				command_torques.tail(4) = gripper_command_torques;
 
@@ -380,7 +371,8 @@ int main() {
 				joint_task->computeTorques(joint_task_torques);
 				command_torques.head(10) = base_task_torques + joint_task_torques;
 
-				q_gripper_desired << -0.03, 0.03, -0.03, 0.03;
+				q_gripper_desired.setZero();
+				//q_gripper_desired << -0.03, 0.03, -0.03, 0.03;
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 				command_torques.tail(4) = gripper_command_torques;
 
@@ -395,7 +387,7 @@ int main() {
 				//posori_task->_desired_orientation = vert_orient;
 				
 				joint_task->_use_velocity_saturation_flag = true;
-				joint_task->_saturation_velocity << 1.1,1.1,1.1,1.1,1.1,1.1,1.1;  // adjust based on speed
+				joint_task->_saturation_velocity << 2,2,2,2,2,2,2;  // adjust based on speed
 
 				N_prec.setIdentity();
 				base_task->updateTaskModel(N_prec);
@@ -406,10 +398,8 @@ int main() {
 				joint_task->computeTorques(joint_task_torques);
 				command_torques.head(10) = base_task_torques + joint_task_torques;
 
-				//q_gripper_desired << -0.03, 0.03, -0.03, 0.03;
-				q_gripper_desired.setZero(4);
+				q_gripper_desired.setZero();
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
-				//cout<<"gripper torques" << gripper_command_torques.transpose() << "\n";
 				command_torques.tail(4) = gripper_command_torques;
 
 				if (abs(robot->_q(3)-desired_q_throwing(0))<.01){
@@ -443,7 +433,8 @@ int main() {
 				joint_task->computeTorques(joint_task_torques);
 				command_torques.head(10) = base_task_torques + joint_task_torques;
 
-				q_gripper_desired << -0.03, 0.03, -0.03, 0.03;
+				//q_gripper_desired << -0.03, 0.03, -0.03, 0.03;
+				q_gripper_desired.setZero();
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 				command_torques.tail(4) = gripper_command_torques;
 
@@ -473,7 +464,8 @@ int main() {
 					cout << "Move to state 9: POS_TRACK\n" << endl;
 				}
 
-				q_gripper_desired << -0.03, 0.03, -0.03, 0.03;
+				q_gripper_desired.setZero();
+				//q_gripper_desired << -0.03, 0.03, -0.03, 0.03;
 				gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 				command_torques.tail(4) = gripper_command_torques;
 
@@ -482,8 +474,8 @@ int main() {
 					auto end = std::chrono::high_resolution_clock::now();
 					auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-					if (duration >= 2000)
-					{
+					// if (duration >= 2000)
+					// {
 						y = std::stod(redis_client.get("Y_Centroid"));
 						z = std::stod(redis_client.get("Z_Centroid"));
 						centroid_vec << 0, y, -1*z;
@@ -517,7 +509,7 @@ int main() {
 
 						command_torques.head(10) = posori_task_torques + base_task_torques + joint_task_torques;
 
-						q_gripper_desired << -0.03, 0.03, -0.03, 0.03;
+						//q_gripper_desired << -0.03, 0.03, -0.03, 0.03;
 						gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 						command_torques.tail(4) = gripper_command_torques;
 
@@ -525,12 +517,14 @@ int main() {
 
 						cout << "ee_pos" << ee_pos.transpose() <<"\n";
 
-						if (abs(ee_pos(2)-desired_z)<=.005){
+						if ((abs(ee_pos(2)-max_z_arm)<=.005)||(abs(ee_pos(1)-max_y_arm)<=.005)){
+							
 							state = RELEASE_BALL;
 							cout << "Move to state 10: RELEASE_BALL\n" << endl;
 							releasetimer_start = std::chrono::high_resolution_clock::now();
+							q_gripper_desired << -0.2, 0.2, -0.2, 0.2;
 						}
-					}
+					//}
 			} else if (state==RELEASE_BALL){
 
 					posori_task->computeTorques(posori_task_torques);
@@ -539,7 +533,6 @@ int main() {
 
 					command_torques.head(10) = posori_task_torques + base_task_torques + joint_task_torques;
 						
-					q_gripper_desired << -0.12, 0.12, -0.12, 0.12;
 					gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 					command_torques.tail(4) = gripper_command_torques;
 
@@ -571,7 +564,8 @@ int main() {
 
 					command_torques.head(10) = base_task_torques + joint_task_torques;
 						
-					q_gripper_desired << -0.0, 0.0, -0.0, 0.0;
+					//q_gripper_desired << -0.12, 0.12, -0.12, 0.12;
+					q_gripper_desired.setZero();
 					gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 					command_torques.tail(4) = gripper_command_torques;
 
@@ -595,7 +589,6 @@ int main() {
 					joint_task->computeTorques(joint_task_torques);
 					command_torques.head(10) = base_task_torques + joint_task_torques;
 
-					q_gripper_desired << -0.0, 0.0, -0.0, 0.0;
 					gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 					command_torques.tail(4) = gripper_command_torques;
 			} 
