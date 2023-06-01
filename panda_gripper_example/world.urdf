@@ -324,7 +324,7 @@
 	    <visual>
 	        <origin xyz="0.0 0.0 -0.00635" rpy="0 0 0" />
 	        <geometry>
-	            <mesh filename="../../model/test_objects/meshes/visual/arena_wall.obj" />
+	            <mesh filename="../../model/test_objects/meshes/visual/alley_wall_v2.obj" />
 	        </geometry>
 			</visual>
 	</static_object>

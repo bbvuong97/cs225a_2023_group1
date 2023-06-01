@@ -537,6 +537,7 @@ int main() {
 							releasetimer_start = std::chrono::high_resolution_clock::now();
 
 							redis_client.set(CHANGE_BALL_RESTITUTION_KEY, "true");
+
 							state = RELEASE_BALL;
 
 							//test

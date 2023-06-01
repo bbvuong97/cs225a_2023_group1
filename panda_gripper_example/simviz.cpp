@@ -180,7 +180,6 @@ int main() {
 		// sim->setCoeffFrictionStatic("bowling_pin9",0.05);
 		// sim->setCoeffFrictionStatic("bowling_pin10",0.05);
 
-
 	/*------- Set up visualization -------*/
 	// set up error callback
 	glfwSetErrorCallback(glfwError);
