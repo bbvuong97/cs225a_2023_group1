@@ -37,7 +37,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="../../../model/mmp_panda/meshes/panda_BaseCombo.obj" />
+        <mesh filename="../../../model/iiwa7/meshes/kuka_mobile_base.obj" />
       </geometry>
     </visual>
   </link>
