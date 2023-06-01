@@ -454,6 +454,7 @@ int main() {
 					
 					desired_base_x = robot->_q(0);
 					base_task->_desired_position.head(3) = robot->_q.head(3);
+					joint_task->_use_velocity_saturation_flag = false;
 					cout << "Move to state 8: START_POS \n" << endl;
 				}
 
@@ -484,8 +485,8 @@ int main() {
 
 			} else if (state==POS_TRACK){
 
-					auto end = std::chrono::high_resolution_clock::now();
-					auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+					//auto end = std::chrono::high_resolution_clock::now();
+					//auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
 					// if (duration >= 2000)
 					// {
@@ -537,8 +538,12 @@ int main() {
 							releasetimer_start = std::chrono::high_resolution_clock::now();
 
 							redis_client.set(CHANGE_BALL_RESTITUTION_KEY, "true");
+							posori_task -> reInitializeTask();
+							posori_task->_desired_position = ee_pos;
+							posori_task->_desired_orientation = vert_orient;
 
 							state = RELEASE_BALL;
+
 
 							//test
 							// posori_task->computeTorques(posori_task_torques);
@@ -555,9 +560,17 @@ int main() {
 					//}
 			} else if (state==RELEASE_BALL){
 
-					posori_task->computeTorques(posori_task_torques);
+					N_prec.setIdentity();
+					posori_task->updateTaskModel(N_prec);
+					N_prec = posori_task->_N;
+					base_task->updateTaskModel(N_prec);
+					N_prec = base_task->_N;	
+					joint_task->updateTaskModel(N_prec);
+
+					//posori_task->computeTorques(posori_task_torques);
 					base_task->computeTorques(base_task_torques);
 					joint_task->computeTorques(joint_task_torques);
+					posori_task->computeTorques(posori_task_torques);
 
 					command_torques.head(10) = posori_task_torques + base_task_torques + joint_task_torques;
 					
@@ -568,7 +581,7 @@ int main() {
 					auto releasetimer_end = std::chrono::high_resolution_clock::now();
 					auto releasetimer_duration = std::chrono::duration_cast<std::chrono::milliseconds>(releasetimer_end - releasetimer_start).count();
 
-					if (releasetimer_duration>=10000){
+					if (releasetimer_duration>=8000){
 						cout << "Move to state 11: RETURN_HOME_ARM\n" << endl;
 
 						joint_task->reInitializeTask();
@@ -587,6 +600,9 @@ int main() {
 					base_task->updateTaskModel(N_prec);
 					N_prec = base_task->_N;	
 			  	joint_task->updateTaskModel(N_prec);
+
+					joint_task->_use_velocity_saturation_flag = true;
+					joint_task->_saturation_velocity << 2,2,2,2,2,2,2; 
 
 					base_task->computeTorques(base_task_torques);
 					joint_task->computeTorques(joint_task_torques);
