@@ -140,8 +140,8 @@ int main() {
 	VectorXd gripper_command_torques(4);
 	VectorXd q_gripper(4), dq_gripper(4);
 	VectorXd q_gripper_desired(4);
-	double kp_gripper = 100;
-	double kv_gripper = 20;
+	double kp_gripper = 400; //100
+	double kv_gripper = 40; //20
 
 	// partial joint task to control the mobile base 
 	vector<int> base_joint_selection{0, 1, 2};

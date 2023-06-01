@@ -103,12 +103,12 @@
 	        </geometry>
 	    </visual>
 
-	    <collision>
+	    <!-- <collision>
 	        <origin xyz="0 0 0.01" rpy="0 0 0" />
 	        <geometry>
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
-	    </collision>
+	    </collision> -->
 	</dynamic_object>
 
 	<dynamic_object name="bowling_pin2">
@@ -126,12 +126,12 @@
 	        </geometry>
 	    </visual>
 
-	    <collision>
+	    <!-- <collision>
 	        <origin xyz="0 0 0.01" rpy="0 0 0" />
 	        <geometry>
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
-	    </collision>
+	    </collision> -->
 	</dynamic_object>
 
 	<dynamic_object name="bowling_pin3">
@@ -149,12 +149,12 @@
 	        </geometry>
 	    </visual>
 
-	    <collision>
+	    <!-- <collision>
 	        <origin xyz="0 0 0.01" rpy="0 0 0" />
 	        <geometry>
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
-	    </collision>
+	    </collision> -->
 	</dynamic_object>
 
 	<dynamic_object name="bowling_pin4">
@@ -172,12 +172,12 @@
 	        </geometry>
 	    </visual>
 
-	    <collision>
+	    <!-- <collision>
 	        <origin xyz="0 0 0.01" rpy="0 0 0" />
 	        <geometry>
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
-	    </collision>
+	    </collision> -->
 	</dynamic_object>
 
 	<dynamic_object name="bowling_pin5">
@@ -195,12 +195,12 @@
 	        </geometry>
 	    </visual>
 
-	    <collision>
+	    <!-- <collision>
 	        <origin xyz="0 0 0.01" rpy="0 0 0" />
 	        <geometry>
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
-	    </collision>
+	    </collision> -->
 	</dynamic_object>
 
 	<dynamic_object name="bowling_pin6">
@@ -218,12 +218,12 @@
 	        </geometry>
 	    </visual>
 
-	    <collision>
+	    <!-- <collision>
 	        <origin xyz="0 0 0.01" rpy="0 0 0" />
 	        <geometry>
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
-	    </collision>
+	    </collision> -->
 	</dynamic_object>
 
 	<dynamic_object name="bowling_pin7">
@@ -241,12 +241,12 @@
 	        </geometry>
 	    </visual>
 
-	    <collision>
+	    <!-- <collision>
 	        <origin xyz="0 0 0.01" rpy="0 0 0" />
 	        <geometry>
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
-	    </collision>
+	    </collision> -->
 	</dynamic_object>
 
 	<dynamic_object name="bowling_pin8">
@@ -264,12 +264,12 @@
 	        </geometry>
 	    </visual>
 
-	    <collision>
+	    <!-- <collision>
 	        <origin xyz="0 0 0.01" rpy="0 0 0" />
 	        <geometry>
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
-	    </collision>
+	    </collision> -->
 	</dynamic_object>
 
 	<dynamic_object name="bowling_pin9">
@@ -287,12 +287,12 @@
 	        </geometry>
 	    </visual>
 
-	    <collision>
+	    <!-- <collision>
 	        <origin xyz="0 0 0.01" rpy="0 0 0" />
 	        <geometry>
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
-	    </collision>
+	    </collision> -->
 	</dynamic_object>
 
 	<dynamic_object name="bowling_pin10">
@@ -310,12 +310,12 @@
 	        </geometry>
 	    </visual>
 
-	    <collision>
+	    <!-- <collision>
 	        <origin xyz="0 0 0.01" rpy="0 0 0" />
 	        <geometry>
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
-	    </collision>
+	    </collision> -->
 	</dynamic_object>
 	
 
