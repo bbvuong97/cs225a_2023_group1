@@ -17,3 +17,5 @@ const std::string SIMULATION_LOOP_DONE_KEY = "cs225a::simulation::done";
 const std::string CONTROLLER_LOOP_DONE_KEY = "cs225a::controller::done";
 
 const std::string CHANGE_BALL_RESTITUTION_KEY = "restitution_key";
+
+//const std::string RESET_PINS = "reset_bowling_pins_key";

@@ -103,12 +103,12 @@
 	        </geometry>
 	    </visual>
 
-	    <!-- <collision>
+	    <collision>
 	        <origin xyz="0 0 0.01" rpy="0 0 0" />
 	        <geometry>
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
-	    </collision> -->
+	    </collision>
 	</dynamic_object>
 
 	<dynamic_object name="bowling_pin2">
@@ -126,12 +126,12 @@
 	        </geometry>
 	    </visual>
 
-	    <!-- <collision>
+	    <collision>
 	        <origin xyz="0 0 0.01" rpy="0 0 0" />
 	        <geometry>
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
-	    </collision> -->
+	    </collision>
 	</dynamic_object>
 
 	<dynamic_object name="bowling_pin3">
@@ -149,12 +149,12 @@
 	        </geometry>
 	    </visual>
 
-	    <!-- <collision>
+	    <collision>
 	        <origin xyz="0 0 0.01" rpy="0 0 0" />
 	        <geometry>
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
-	    </collision> -->
+	    </collision>
 	</dynamic_object>
 
 	<dynamic_object name="bowling_pin4">
@@ -172,12 +172,12 @@
 	        </geometry>
 	    </visual>
 
-	    <!-- <collision>
+	    <collision>
 	        <origin xyz="0 0 0.01" rpy="0 0 0" />
 	        <geometry>
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
-	    </collision> -->
+	    </collision>
 	</dynamic_object>
 
 	<dynamic_object name="bowling_pin5">
@@ -195,12 +195,12 @@
 	        </geometry>
 	    </visual>
 
-	    <!-- <collision>
+	    <collision>
 	        <origin xyz="0 0 0.01" rpy="0 0 0" />
 	        <geometry>
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
-	    </collision> -->
+	    </collision>
 	</dynamic_object>
 
 	<dynamic_object name="bowling_pin6">
@@ -218,12 +218,12 @@
 	        </geometry>
 	    </visual>
 
-	    <!-- <collision>
+	    <collision>
 	        <origin xyz="0 0 0.01" rpy="0 0 0" />
 	        <geometry>
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
-	    </collision> -->
+	    </collision>
 	</dynamic_object>
 
 	<dynamic_object name="bowling_pin7">
@@ -241,12 +241,12 @@
 	        </geometry>
 	    </visual>
 
-	    <!-- <collision>
+	    <collision>
 	        <origin xyz="0 0 0.01" rpy="0 0 0" />
 	        <geometry>
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
-	    </collision> -->
+	    </collision>
 	</dynamic_object>
 
 	<dynamic_object name="bowling_pin8">
@@ -264,12 +264,12 @@
 	        </geometry>
 	    </visual>
 
-	    <!-- <collision>
+	    <collision>
 	        <origin xyz="0 0 0.01" rpy="0 0 0" />
 	        <geometry>
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
-	    </collision> -->
+	    </collision>
 	</dynamic_object>
 
 	<dynamic_object name="bowling_pin9">
@@ -287,12 +287,12 @@
 	        </geometry>
 	    </visual>
 
-	    <!-- <collision>
+	    <collision>
 	        <origin xyz="0 0 0.01" rpy="0 0 0" />
 	        <geometry>
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
-	    </collision> -->
+	    </collision>
 	</dynamic_object>
 
 	<dynamic_object name="bowling_pin10">
@@ -310,12 +310,12 @@
 	        </geometry>
 	    </visual>
 
-	    <!-- <collision>
+	    <collision>
 	        <origin xyz="0 0 0.01" rpy="0 0 0" />
 	        <geometry>
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
-	    </collision> -->
+	    </collision>
 	</dynamic_object>
 	
 
@@ -343,7 +343,7 @@
 		<collision>
 	        <origin xyz="0.0 0.0 -0.00635" rpy="0 0 0" />
 	        <geometry>
-	            <box size="0.05 8.4 0.2" />
+	            <box size="0.05 8.4 0.5" />
 	        </geometry>
 	  </collision>
 	</static_object>
@@ -362,7 +362,7 @@
 		<collision>
 	        <origin xyz="0.0 0.0 -0.00635" rpy="0 0 0" />
 	        <geometry>
-	            <box size="0.05 8.4 0.2" />
+	            <box size="0.05 8.4 0.5" />
 	        </geometry>
 	  </collision>
 	</static_object>
@@ -380,7 +380,8 @@
 	<camera name="camera_fixed">
 		<!-- <position xyz="0 -3.5 2.5" /> -->
 		<!-- <position xyz = "0 -3.5 7" /> -->
-		<position xyz = "3.5 0 1" />
+		<!-- <position xyz = "3.5 0 1" newest/> -->
+		<position xyz = "0 5.5 1"/>
 		<vertical xyz="0.0 0.0 5.0" />
 		<!-- <lookat xyz="0 3 0.5" /> -->
 		<lookat xyz="0 0 1" />

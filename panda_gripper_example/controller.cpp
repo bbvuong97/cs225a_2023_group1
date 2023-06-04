@@ -38,6 +38,7 @@ inline const char * const bool_to_string(bool b);
 const string robot_file = "./resources/panda_arm.urdf";
 
 enum State 
+
 {
 	BASE = 0, 
 	HAND = 1,
@@ -70,6 +71,7 @@ int main() {
 	redis_client.set("Y_Centroid","0");
 	redis_client.set("Z_Centroid","0");
 	redis_client.set(CHANGE_BALL_RESTITUTION_KEY, "false");
+	//redis_client.set(RESET_PINS, "false");
 
 	// set up signal handler
 	signal(SIGABRT, &sighandler);
@@ -104,8 +106,42 @@ int main() {
 	posori_task->_kv_ori = 24.0;
 	Matrix3d vert_orient;
 	vert_orient << 1, 0, 0,
-								 0,1, 0,
+								 0, 1, 0,
 								 0, 0,-1;
+
+	Matrix3d hor_orient;
+	Matrix3d Rz45;
+	Matrix3d Rx155;
+	double angle1=0;
+	double angle2=155*M_PI/180;
+
+	Matrix3d vert_orient2;
+	vert_orient2 << 1, 0, 0,
+								 0, -1, 0,
+								 0, 0,-1;
+
+	// Rz45 << cos(-M_PI/4), -sin(-M_PI/4), 0,
+	// 				sin(-M_PI/4), cos(-M_PI/4), 0,
+	// 				0, 0, 1;
+
+	// R_cupping << 1, 0, 0,
+	// 							0, cos(M_PI/4), -sin(M_PI/4),
+	// 							0, sin(M_PI/4), cos(M_PI/4);
+
+	Rz45 << cos(M_PI/4), -sin(M_PI/4), 0,
+					 sin(M_PI/4), cos(M_PI/4), 0,
+					 0, 0, 1;
+	// Rx << cos(angle2), -sin(angle2), 0,
+	// 				 sin(angle2), cos(angle2), 0,
+	// 				 0, 0, 1;
+
+	Matrix3d R2 = AngleAxisd(M_PI / 4, Vector3d(1,0,0)).toRotationMatrix();
+
+	hor_orient = vert_orient2 * R2;
+
+	// hor_orient << 1, 0, 0,
+	// 							0, 1, 0,
+	// 							0, 0, 1;
 
 	// joint task
 	vector<int> arm_joint_selection{3, 4, 5, 6, 7, 8, 9};
@@ -131,17 +167,20 @@ int main() {
 	//desired_q_throwing << 0.0, -15.0, -50.0, -105.0, 0.0, 90.0, 45.0; 
 	//desired_q_throwing << 0.0, 0.0, -50.0, -105.0, 0.0, 90.0, 90.0; 
 	//desired_q_throwing << 0.0, 0.0, -55.0, -105.0, 0.0, 110.0, 100.0; 
-	desired_q_throwing << 0.0, 0.0, -55.0, -105.0, 0.0, 110.0, -97.0; 
-	desired_q_throwing *= M_PI/180.0;
+	//desired_q_throwing << 0.0, 0.0, -55.0, -105.0, 0.0, 110.0, -55.0; 
+	desired_q_throwing << 0.0, 0.0, -50.0, -105.0, 0.0, 100.0, -55.0; //prev
+	desired_q_throwing *= M_PI/180.0; //prev
+	desired_q_throwing << 1.4657, -.904, -.2735, -2.512, -0.181, 1.748, 1.32;
 	//joint_task->_desired_velocity = qdot_init_desired;
+	Vector3d desiredthrowtraj;
 
 
 	// gripper task containers
 	VectorXd gripper_command_torques(4);
 	VectorXd q_gripper(4), dq_gripper(4);
 	VectorXd q_gripper_desired(4);
-	double kp_gripper = 400; //100
-	double kv_gripper = 40; //20
+	double kp_gripper = 800; //100
+	double kv_gripper = 2*sqrt(kp_gripper); //20
 
 	// partial joint task to control the mobile base 
 	vector<int> base_joint_selection{0, 1, 2};
@@ -160,13 +199,13 @@ int main() {
 	base_task->_desired_position = base_pose_desired;
 	double desired_base_x = 0;
 	double max_z_arm = .5; //.78 before
-	double max_y_arm = .7; //.5 before
+	double max_y_arm = .6; //.5 before
 
 	//camera state variables
 	Vector3d ee_pos_init = Vector3d::Zero(3);
 	Vector3d zero_offset = Vector3d::Zero(3);
 	Vector3d centroid_vec = Vector3d::Zero(3);
-	const double scale_factor = .001;
+	const double scale_factor = .002; //.001 before
 	int cameracounter = 0;
 	double y_offset;
 	double z_offset;
@@ -278,7 +317,7 @@ int main() {
 				posori_task->reInitializeTask();
 				posori_task->_desired_position = atBallHeight;
 				posori_task->_desired_orientation = vert_orient;
-
+			
 				N_prec.setIdentity();
 				posori_task->updateTaskModel(N_prec);
 				N_prec = posori_task->_N;
@@ -392,7 +431,7 @@ int main() {
 			} else if(state == TURN180){
 				joint_task->_desired_position = desired_q_throwing;
 				//joint_task->_desired_velocity = qdot_init_desired;
-				//posori_task->_desired_orientation = vert_orient;
+				posori_task->_desired_orientation = vert_orient;
 				
 				joint_task->_use_velocity_saturation_flag = true;
 				joint_task->_saturation_velocity << 2,2,2,2,2,2,2;  // adjust based on speed
@@ -506,15 +545,21 @@ int main() {
 						}
 						
 						N_prec.setIdentity();
-						base_task->updateTaskModel(N_prec);
-						N_prec = base_task->_N;	
 						posori_task->updateTaskModel(N_prec);
 						N_prec = posori_task->_N;
+						base_task->updateTaskModel(N_prec);
+						N_prec = base_task->_N;	
 						joint_task->updateTaskModel(N_prec);
 
-						base_task->_desired_position = base_pose_desired;
-						posori_task->_desired_position = ee_pos_init + ((centroid_vec - zero_offset) * scale_factor);
-						posori_task->_desired_orientation = vert_orient;
+						desiredthrowtraj = ee_pos_init + ((centroid_vec - zero_offset) * scale_factor);
+						posori_task->_desired_position = desiredthrowtraj;
+						posori_task->_desired_orientation = hor_orient;
+						base_task->_desired_position(0) = base_pose_desired(0);
+						base_task->_desired_position(2) = base_pose_desired(2);
+						base_task->_desired_position(1) = desiredthrowtraj(1)-.2;
+						base_task->_kp = 0.1;
+						//base_task->_kv = 10;
+						base_task->_kv = 20;
 
 						cout << "Difference: " << (centroid_vec - zero_offset).transpose() << "\n";
 
@@ -526,6 +571,7 @@ int main() {
 
 						gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 						command_torques.tail(4) = gripper_command_torques;
+						cout<< "gripper command torques" << gripper_command_torques.transpose() << "\n";
 
 						robot->position(ee_pos, control_link, control_point);
 
@@ -540,9 +586,10 @@ int main() {
 							redis_client.set(CHANGE_BALL_RESTITUTION_KEY, "true");
 							posori_task -> reInitializeTask();
 							posori_task->_desired_position = ee_pos;
-							posori_task->_desired_orientation = vert_orient;
+							posori_task->_desired_orientation = hor_orient;
 
 							state = RELEASE_BALL;
+							continue;
 
 
 							//test
@@ -567,7 +614,6 @@ int main() {
 					N_prec = base_task->_N;	
 					joint_task->updateTaskModel(N_prec);
 
-					//posori_task->computeTorques(posori_task_torques);
 					base_task->computeTorques(base_task_torques);
 					joint_task->computeTorques(joint_task_torques);
 					posori_task->computeTorques(posori_task_torques);
@@ -595,7 +641,7 @@ int main() {
 
 
 			} else if (state==RETURN_HOME_ARM){
-
+					//redis_client.set(RESET_PINS, "true");
 					N_prec.setIdentity();
 					base_task->updateTaskModel(N_prec);
 					N_prec = base_task->_N;	
