@@ -181,7 +181,7 @@
       <visual>
         <origin xyz="0 0 0.107" rpy="0 0 -0.78539816339" />
         <geometry>
-          <mesh filename="../../../model/panda/meshes/visual/hand.obj"/>
+          <mesh filename="../../../model/panda/meshes/visual/joint7_sphere.obj" scale="3 3 2"/>
         </geometry>
       </visual>
 <!--       <collision>
@@ -200,8 +200,9 @@
         <inertia ixx="0.01" iyy="0.01" izz="0.005" ixy="0" ixz="0" iyz="0" />
       </inertial>
       <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="../../../model/panda/meshes/visual/finger.obj" scale="2 2 2"/>
+          <mesh filename="../../../model/panda/meshes/visual/gripper_new.obj" scale="1 1 1"/>
         </geometry>
       </visual>
 
@@ -212,15 +213,15 @@
         </geometry>
       </collision> 
 
-      <visual>
+      <!-- <visual>
         <origin xyz="0 0 .1" rpy="0 0 0" />
         <geometry>
           <box size="0.1 .02 0.2" />
         </geometry>
         <material name="material_red">
             <color rgba="1.0 0.0 0.0 1.0" />
-        </material>
-      </visual>   
+        </material> 
+      </visual>   -->
     </link>
 
 
@@ -233,7 +234,7 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 3.14159265359" />
         <geometry>
-          <mesh filename="../../../model/panda/meshes/visual/finger.obj" scale="2 2 2"/>
+          <mesh filename="../../../model/panda/meshes/visual/gripper_new.obj" scale="1 1 1"/>
         </geometry>
       </visual>
 
@@ -244,7 +245,7 @@
         </geometry>
       </collision> 
 
-      <visual>
+      <!-- <visual>
         <origin xyz="0 0 .1" rpy="0 0 0" />
         <geometry>
           <box size="0.1 .02 0.2" />
@@ -252,7 +253,7 @@
         <material name="material_green">
             <color rgba="0.0 1.0 0.0 1.0" />
         </material>
-      </visual>  
+      </visual>   -->
     </link>
 
     <link name="leftfinger_bottom">
@@ -262,8 +263,9 @@
         <inertia ixx="0.01" iyy="0.01" izz="0.005" ixy="0" ixz="0" iyz="0" />
       </inertial>
       <visual>
+        <origin xyz="0 0 0" rpy="0 0 -1.57079632679" />
         <geometry>
-          <mesh filename="../../../model/panda/meshes/visual/finger.obj" scale="2 2 2"/>
+          <mesh filename="../../../model/panda/meshes/visual/gripper_new.obj" scale="1 1 1"/>
         </geometry>
       </visual>
 
@@ -274,7 +276,7 @@
         </geometry>
       </collision> 
 
-      <visual>
+      <!-- <visual>
         <origin xyz="0 0 .1" rpy="0 0 1.57079632679" />
         <geometry>
           <box size="0.1 .02 0.2" />
@@ -282,7 +284,7 @@
         <material name="material_blue">
             <color rgba="0.0 0.0 1.0 1.0" />
         </material>
-      </visual>   
+      </visual>    -->
     </link>
 
 
@@ -293,9 +295,9 @@
         <inertia ixx="0.01" iyy="0.01" izz="0.005" ixy="0" ixz="0" iyz="0" />
       </inertial>
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 3.14159265359" />
+        <origin xyz="0 0 0" rpy="0 0 -1.57079632679" />
         <geometry>
-          <mesh filename="../../../model/panda/meshes/visual/finger.obj" scale="2 2 2"/>
+          <mesh filename="../../../model/panda/meshes/visual/gripper_new.obj" scale="1 1 1"/>
         </geometry>
       </visual>
 
@@ -306,15 +308,15 @@
         </geometry>
       </collision> 
 
-      <visual>
+      <!-- <visual>
         <origin xyz="0 0 .1" rpy="0 0 1.57079632679" />
         <geometry>
           <box size="0.1 .02 0.2" />
         </geometry>
-      </visual>  
        <material name="material_yellow">
             <color rgba="1.0 1.0 0.0 1.0" />
         </material>
+         </visual>   -->
     </link>
 
     <!-- JOINTS -->

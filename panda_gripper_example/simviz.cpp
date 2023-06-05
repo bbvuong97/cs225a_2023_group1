@@ -38,12 +38,19 @@ const string audio_file = "/Users/melissakl/Documents/sai2/apps/cs225a_2023_grou
 // dynamic objects information
 //const vector<string> object_names = {"ball","bowling_pin","bowling_pin2"};
 const vector<string> object_names = {"bowling_pin", "bowling_pin2", "bowling_pin3","bowling_pin4","bowling_pin5","bowling_pin6","bowling_pin7","bowling_pin8","bowling_pin9","bowling_pin10","ball"};
+//const vector<string> pin_names = {"bowling_pin", "bowling_pin2", "bowling_pin3","bowling_pin4","bowling_pin5","bowling_pin6","bowling_pin7","bowling_pin8","bowling_pin9","bowling_pin10"};
 
 vector<Vector3d> object_pos;
 vector<Vector3d> object_lin_vel;
 vector<Quaterniond> object_ori;
 vector<Vector3d> object_ang_vel;
 const int n_objects = object_names.size();
+
+//vector<Quaterniond> pin_ori_init(pin_names.size());
+//vector<Quaterniond> pin_ori(pin_names.size());
+vector<Vector3d> object_positions(n_objects);
+vector<Quaterniond> object_orientations(n_objects);
+//bool reset_pins = false;
 
 // redis client 
 RedisClient redis_client; 
@@ -96,7 +103,7 @@ int main() {
 	Eigen::Vector3d camera_pos, camera_lookat, camera_vertical;
 	graphics->getCameraPose(camera_name, camera_pos, camera_vertical, camera_lookat);
 	graphics->_world->setBackgroundColor(66.0/255, 135.0/255, 245.0/255);  // set blue background 	
-	graphics->showLinkFrame(true, robot_name, ee_link_name, 0.15);  // can add frames for different links
+	//graphics->showLinkFrame(true, robot_name, ee_link_name, 0.15);  // can add frames for different links
 	graphics->getCamera(camera_name)->setClippingPlanes(0.1, 50);  // set the near and far clipping planes 
 
 	//AUDIO//
@@ -104,20 +111,12 @@ int main() {
 	cAudioDevice* audioDevice = new cAudioDevice;
 	cAudioBuffer* audioBuffer = new cAudioBuffer;
 	cAudioSource* audioSource = new cAudioSource;
-	// show robot control frame
-	// for (unsigned int i = 0; i < graphics->_world->getNumChildren(); ++i) {
-	// 	if (camera_name == graphics->_world->getChild(i)->m_name) {
-	// 	// attach audio device to camera
-	// 	graphics->_world->getChild(i)->attachAudioDevice(audioDevice);
-	// 	}
-	// }
+
 	graphics->getCamera(camera_name)->attachAudioDevice(audioDevice);
-	// create an audio buffer
-	//cAudioBuffer* audioBuffer = audioDevice->newAudioBuffer();
+	
 	// load a WAV file
 	audioBuffer->loadFromFile(audio_file);
-	// create an audio source
-	//cAudioSource* audioSource = audioDevice->newAudioSource();
+	
 	// assign audio buffer to audio source
 	audioSource->setAudioBuffer(audioBuffer);
 	// loop playing of sound
@@ -155,17 +154,17 @@ int main() {
 
     // set co-efficient of restition to zero for force control
     sim->setCollisionRestitution(0.0);
-		sim->setCollisionRestitution("ball",0.0);
+	sim->setCollisionRestitution("ball",0.0);
 
     // set co-efficient of friction
     sim->setCoeffFrictionStatic(0.0);
     sim->setCoeffFrictionDynamic(0.0);
-		sim->setCoeffFrictionStatic("ball",0.5);
-		sim->setCoeffFrictionDynamic("ball",0.5);
-		sim->setCoeffFrictionStatic(robot_name,"leftfinger",.8);
-		sim->setCoeffFrictionDynamic(robot_name,"rightfinger",.8);
-		sim->setCoeffFrictionDynamic(robot_name,"leftfinger_bottom",.8);
-		sim->setCoeffFrictionDynamic(robot_name,"rightfinger_bottom",.8);
+	sim->setCoeffFrictionStatic("ball",0.5);
+	sim->setCoeffFrictionDynamic("ball",0.5);
+	sim->setCoeffFrictionStatic(robot_name,"leftfinger",.8);
+	sim->setCoeffFrictionDynamic(robot_name,"rightfinger",.8);
+	sim->setCoeffFrictionDynamic(robot_name,"leftfinger_bottom",.8);
+	sim->setCoeffFrictionDynamic(robot_name,"rightfinger_bottom",.8);
 
 		//sim->setCoeffFrictionStatic("Lane_ground",0.05);
 		//sim->setCoeffFrictionDynamic("Lane_ground",0.05);
@@ -179,6 +178,11 @@ int main() {
 		// sim->setCoeffFrictionStatic("bowling_pin8",0.05);
 		// sim->setCoeffFrictionStatic("bowling_pin9",0.05);
 		// sim->setCoeffFrictionStatic("bowling_pin10",0.05);
+
+
+	for (int i = 0; i < n_objects; ++i) {
+	 	sim->getObjectPosition(object_names[i], object_pos[i], object_ori[i]);
+	 }
 
 	/*------- Set up visualization -------*/
 	// set up error callback
@@ -221,6 +225,7 @@ int main() {
 	redis_client.set(SIMULATION_LOOP_DONE_KEY, bool_to_string(fSimulationLoopDone));
   redis_client.set(CONTROLLER_LOOP_DONE_KEY, bool_to_string(fControllerLoopDone));
 	redis_client.set(CHANGE_BALL_RESTITUTION_KEY, "false");
+	redis_client.set(RESET_PINS, "false");
 
 	// start simulation thread
 	fSimulationRunning = true;
@@ -322,7 +327,7 @@ int main() {
 	// wait for simulation to finish
 	fSimulationRunning = false;
 	fSimulationLoopDone = false;
-  redis_client.set(SIMULATION_LOOP_DONE_KEY, bool_to_string(fSimulationLoopDone));
+  	redis_client.set(SIMULATION_LOOP_DONE_KEY, bool_to_string(fSimulationLoopDone));
 	sim_thread.join();
 
 	// destroy context
@@ -371,6 +376,7 @@ void simulation(Sai2Model::Sai2Model* robot, Simulation::Sai2Simulation* sim)
 	double start_time = timer.elapsedTime();
 	double last_time = start_time;
 	bool change_ball_restitution = false;
+	bool check_pin_reset_status = false;
 
 	// start simulation 
 	while (fSimulationRunning) {
@@ -385,11 +391,19 @@ void simulation(Sai2Model::Sai2Model* robot, Simulation::Sai2Simulation* sim)
 
 				if (change_ball_restitution){
 					sim->setCollisionRestitution("ball", 1.0);
-
 					sim->setCoeffFrictionStatic("ball",0.001);
 					sim->setCoeffFrictionDynamic("ball",0.001);
 					
 					redis_client.set(CHANGE_BALL_RESTITUTION_KEY, "false");
+				}
+
+				check_pin_reset_status = string_to_bool(redis_client.get(RESET_PINS));
+
+				if (check_pin_reset_status) {
+					for (int i = 0; i < n_objects; ++i) {
+	 					sim->setObjectPosition(object_names[i], object_pos[i], object_ori[i]);
+	 				}
+	 				//redis_client.set(RESET_PINS, "false");
 				}
 
 				// apply gravity compensation 
@@ -426,7 +440,7 @@ void simulation(Sai2Model::Sai2Model* robot, Simulation::Sai2Simulation* sim)
 				gripper_q = robot->_q.tail(4);
 				gripper_dq = robot->_dq.tail(4);
 
-				// get dynamic object positions
+				// // get dynamic object positions
 				for (int i = 0; i < n_objects; ++i) {
 					sim->getObjectPosition(object_names[i], object_pos[i], object_ori[i]);
 					sim->getObjectVelocity(object_names[i], object_lin_vel[i], object_ang_vel[i]);

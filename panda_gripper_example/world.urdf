@@ -367,6 +367,726 @@
 	  </collision>
 	</static_object>
 
+	<static_object name="basket2">
+		<origin xyz="-2.8 .1 0.0" rpy="0 0 0"/>
+		<inertial>
+        	<origin xyz="0 0 0" rpy="0 0 0" />
+        	<mass value="10" />
+        	<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/basket_small.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="basket3">
+		<origin xyz="1.4 .1 0.0" rpy="0 0 0"/>
+		<inertial>
+        	<origin xyz="0 0 0" rpy="0 0 0" />
+        	<mass value="10" />
+        	<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/basket_small.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="ball2">
+		<origin xyz="-2.8 -.5 .11" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 0" rpy="0 0 0" />
+        	<mass value="0.25" />
+        	<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0.06" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowlingball_red.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="ball3">
+		<origin xyz="1.4 -.6 .11" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 0" rpy="0 0 0" />
+        	<mass value="0.25" />
+        	<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0.06" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowlingball_yellow.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="ball4">
+		<origin xyz="-0.85 -.95 .11" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 0" rpy="0 0 0" />
+        	<mass value="0.25" />
+        	<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0.06" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowlingball_red.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin11">
+		<origin xyz="-2.0 7.4 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin12">
+		<origin xyz="-1.9 7.6 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin13">
+		<origin xyz="-2.1 7.6 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin14">
+		<origin xyz="-1.8 7.8 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin15">
+		<origin xyz="-2.0 7.8 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin16">
+		<origin xyz="-1.8 7.8 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin17">
+		<origin xyz="-1.7 8.0 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin18">
+		<origin xyz="-1.9 8.0 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin19">
+		<origin xyz="-2.1 8.0 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin20">
+		<origin xyz="-2.3 8.0 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin21">
+		<origin xyz="2.0 7.4 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin22">
+		<origin xyz="1.9 7.6 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin23">
+		<origin xyz="2.1 7.6 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin24">
+		<origin xyz="1.8 7.8 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin25">
+		<origin xyz="2.0 7.8 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin26">
+		<origin xyz="1.8 7.8 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin27">
+		<origin xyz="1.7 8.0 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin28">
+		<origin xyz="1.9 8.0 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin29">
+		<origin xyz="2.1 8.0 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin30">
+		<origin xyz="2.3 8.0 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+<static_object name="bowling_pin31">
+		<origin xyz="4.0 7.4 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin32">
+		<origin xyz="3.9 7.6 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin33">
+		<origin xyz="4.1 7.6 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin34">
+		<origin xyz="3.8 7.8 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin35">
+		<origin xyz="4.0 7.8 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin36">
+		<origin xyz="3.8 7.8 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin37">
+		<origin xyz="3.7 8.0 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin38">
+		<origin xyz="3.9 8.0 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin39">
+		<origin xyz="4.1 8.0 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin40">
+		<origin xyz="4.3 8.0 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin41">
+		<origin xyz="-4.0 7.4 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin42">
+		<origin xyz="-3.9 7.6 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin43">
+		<origin xyz="-4.1 7.6 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin44">
+		<origin xyz="-3.8 7.8 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin45">
+		<origin xyz="-4.0 7.8 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin46">
+		<origin xyz="-3.8 7.8 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin47">
+		<origin xyz="-3.7 8.0 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin48">
+		<origin xyz="-3.9 8.0 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin49">
+		<origin xyz="-4.1 8.0 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+
+	<static_object name="bowling_pin50">
+		<origin xyz="-4.3 8.0 0.0" rpy="0 0 0" />
+		<inertial>
+        	<origin xyz="0 0 .35" rpy="0 0 0" />
+        	<mass value="0.05" />
+        	<inertia ixx=".001" iyy=".001" izz=".1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
+	        </geometry>
+	    </visual>
+	</static_object>
+	
 <light name="light1" type="directional">
 		<position xyz="2.0 -2.0 2.0" />
 		<lookat xyz="0.0 0.0 0.0" />
@@ -381,7 +1101,7 @@
 		<!-- <position xyz="0 -3.5 2.5" /> -->
 		<!-- <position xyz = "0 -3.5 7" /> -->
 		<!-- <position xyz = "3.5 0 1" newest/> -->
-		<position xyz = "0 5.5 1"/>
+		<position xyz = "0 3.5 1"/>
 		<vertical xyz="0.0 0.0 5.0" />
 		<!-- <lookat xyz="0 3 0.5" /> -->
 		<lookat xyz="0 0 1" />

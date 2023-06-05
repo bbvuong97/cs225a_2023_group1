@@ -71,7 +71,7 @@ int main() {
 	redis_client.set("Y_Centroid","0");
 	redis_client.set("Z_Centroid","0");
 	redis_client.set(CHANGE_BALL_RESTITUTION_KEY, "false");
-	//redis_client.set(RESET_PINS, "false");
+	redis_client.set(RESET_PINS, "false");
 
 	// set up signal handler
 	signal(SIGABRT, &sighandler);
@@ -641,7 +641,7 @@ int main() {
 
 
 			} else if (state==RETURN_HOME_ARM){
-					//redis_client.set(RESET_PINS, "true");
+					redis_client.set(RESET_PINS, "true");
 					N_prec.setIdentity();
 					base_task->updateTaskModel(N_prec);
 					N_prec = base_task->_N;	
