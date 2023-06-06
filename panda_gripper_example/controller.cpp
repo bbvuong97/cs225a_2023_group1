@@ -205,7 +205,8 @@ int main() {
 	Vector3d ee_pos_init = Vector3d::Zero(3);
 	Vector3d zero_offset = Vector3d::Zero(3);
 	Vector3d centroid_vec = Vector3d::Zero(3);
-	const double scale_factor = .002; //.001 before
+	const double scale_factor_y = .002; //.001 before
+	const double scale_factor_z = .001;
 	int cameracounter = 0;
 	double y_offset;
 	double z_offset;
@@ -555,7 +556,10 @@ int main() {
 						N_prec = base_task->_N;	
 						joint_task->updateTaskModel(N_prec);
 
-						desiredthrowtraj = ee_pos_init + ((centroid_vec - zero_offset) * scale_factor);
+						desiredthrowtraj(0) = ee_pos_init(0);
+						desiredthrowtraj(1) = ee_pos_init(1) + ((centroid_vec(1) - zero_offset(1)) * scale_factor_y);
+						desiredthrowtraj(2) = ee_pos_init(2) + ((centroid_vec(2) - zero_offset(2)) * scale_factor_z);
+
 						posori_task->_desired_position = desiredthrowtraj;
 						posori_task->_desired_orientation = hor_orient;
 						base_task->_desired_position(0) = base_pose_desired(0);
