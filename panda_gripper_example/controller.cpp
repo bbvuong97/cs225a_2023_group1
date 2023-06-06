@@ -264,6 +264,10 @@ int main() {
 				N_prec = base_task->_N;	
 			  joint_task->updateTaskModel(N_prec);
 
+				base_task->_kp = 400;
+				base_task->_kv = 40;
+				base_task->_desired_position = base_pose_desired;
+
 				// compute torques
 				base_task->computeTorques(base_task_torques);
 				joint_task->computeTorques(joint_task_torques);
@@ -557,11 +561,16 @@ int main() {
 						base_task->_desired_position(0) = base_pose_desired(0);
 						base_task->_desired_position(2) = base_pose_desired(2);
 						base_task->_desired_position(1) = desiredthrowtraj(1)-.2;
-						base_task->_kp = 0.1;
+			
 						//base_task->_kv = 10;
-						base_task->_kv = 20;
 
-						cout << "Difference: " << (centroid_vec - zero_offset).transpose() << "\n";
+						// base_task->_kv = 20;
+						// base_task->_kp = 0.1;
+
+						base_task->_kv = 160;
+						base_task->_kp = 1.6;
+
+						//cout << "Difference: " << (centroid_vec - zero_offset).transpose() << "\n";
 
 						posori_task->computeTorques(posori_task_torques);
 						base_task->computeTorques(base_task_torques);
@@ -571,7 +580,7 @@ int main() {
 
 						gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 						command_torques.tail(4) = gripper_command_torques;
-						cout<< "gripper command torques" << gripper_command_torques.transpose() << "\n";
+						//cout<< "gripper command torques" << gripper_command_torques.transpose() << "\n";
 
 						robot->position(ee_pos, control_link, control_point);
 
@@ -664,6 +673,8 @@ int main() {
 
 						base_task->reInitializeTask();
 						base_task->_desired_position = base_pose_center;
+						base_task->_kp = 400;
+						base_task->_kv = 40;
 						q_gripper_desired.setZero();
 						state = RETURN_HOME_BASE;
 					}
@@ -682,6 +693,19 @@ int main() {
 
 					gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 					command_torques.tail(4) = gripper_command_torques;
+
+					cout << "base pos" << robot->_q.head(3).transpose() << "\n";
+
+					if ( (robot->_q.head(3) - base_pose_center).norm() < 0.005 ) {
+						cout << "Move back to state 1: BASE\n" << endl;
+						joint_task->reInitializeTask();
+						posori_task->reInitializeTask();
+						joint_task->_use_interpolation_flag = false;
+						joint_task->_use_velocity_saturation_flag = false;
+						joint_task->_desired_position = q_init_desired;
+						base_pose_desired << -.25, -.25, 0;
+						state = BASE;
+					}
 			} 
 
 

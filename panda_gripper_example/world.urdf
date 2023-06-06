@@ -50,11 +50,11 @@
 	</static_object>
 
 	<static_object name="Lane_ground">
-		<origin xyz="0.0 0.4 0.0" rpy="0 0 0" />
+		<origin xyz="0.0 0.4 0.0" rpy="0 -0 0" />
 	    <visual>
-	        <origin xyz="0.0 0.0 -0.00635" rpy="0 0 0" />
+	        <origin xyz="0.0 0.0 -0.00635" rpy="1.5708 0 0" />
 	        <geometry>
-	            <mesh filename="../../model/test_objects/meshes/visual/bowlinglanes.obj" />
+	            <mesh filename="../../model/test_objects/meshes/visual/lanes.obj" />
 	        </geometry>
 			</visual>
 		<collision>
@@ -324,7 +324,7 @@
 	    <visual>
 	        <origin xyz="0.0 0.0 -0.00635" rpy="0 0 0" />
 	        <geometry>
-	            <mesh filename="../../model/test_objects/meshes/visual/alley_wall_v2.obj" />
+	            <mesh filename="../../model/test_objects/meshes/visual/wall.obj" />
 	        </geometry>
 			</visual>
 	</static_object>
@@ -341,9 +341,9 @@
 	        </material>
 	    </visual> -->
 		<collision>
-	        <origin xyz="0.0 0.0 -0.00635" rpy="0 0 0" />
+	        <origin xyz="0.0 0.0 0.5" rpy="0 0 0" />
 	        <geometry>
-	            <box size="0.05 8.4 0.5" />
+	            <box size="0.05 8.4 2.0" />
 	        </geometry>
 	  </collision>
 	</static_object>
@@ -360,9 +360,9 @@
 	        </material>
 	    </visual> -->
 		<collision>
-	        <origin xyz="0.0 0.0 -0.00635" rpy="0 0 0" />
+	        <origin xyz="0.0 0.0 0.5" rpy="0 0 0" />
 	        <geometry>
-	            <box size="0.05 8.4 0.5" />
+	            <box size="0.05 8.4 2.0" />
 	        </geometry>
 	  </collision>
 	</static_object>
@@ -397,6 +397,71 @@
 	            <mesh filename="../../model/test_objects/meshes/visual/basket_small.obj" />
 	        </geometry>
 	    </visual>
+	</static_object>
+
+	<!-- <static_object name="kuka1">
+		<origin xyz="10.0 .1 0.0" rpy="0 0 0"/>
+		<inertial>
+        	<origin xyz="0 0 0" rpy="0 0 0" />
+        	<mass value="10" />
+        	<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+      	</inertial>
+
+	    <visual>
+	        <origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+	            <mesh filename="../../model/test_objects/meshes/visual/10685_GenericWoman_v2.obj" />
+	        </geometry>
+	    </visual>
+	</static_object> -->
+
+	<!-- <static_object name="kuka1">
+		<origin xyz="10.0 .1 0.0" rpy="0 0 0"/>
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<mass value="10" />
+			<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+			<inertial>
+		</inertial>
+
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="../../model/test_objects/meshes/visual/10685_GenericWoman_v2.obj" scale="0.001 0.001 0.001"/>
+			</geometry>
+		</visual>
+	</static_object> -->
+
+	<static_object name="eve2">
+		<origin xyz="2.0 .1 0.0" rpy="0 0 0"/>
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<mass value="10" />
+			<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+		</inertial>
+
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="../../model/test_objects/meshes/visual/eve1.obj" scale=".7 .7 .7"/>
+			</geometry>
+		</visual>
+	</static_object>
+
+	<static_object name="eve1">
+		<origin xyz="-2.0 .1 0.0" rpy="0 0 3.14159265359"/>
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<mass value="10" />
+			<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+		</inertial>
+
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="../../model/test_objects/meshes/visual/eve1.obj" scale=".7 .7 .7"/>
+			</geometry>
+		</visual>
 	</static_object>
 
 	<static_object name="ball2">
@@ -447,7 +512,7 @@
 	    </visual>
 	</static_object>
 
-	<static_object name="bowling_pin11">
+	<!-- <static_object name="bowling_pin11">
 		<origin xyz="-2.0 7.4 0.0" rpy="0 0 0" />
 		<inertial>
         	<origin xyz="0 0 .35" rpy="0 0 0" />
@@ -1085,7 +1150,7 @@
 	            <mesh filename="../../model/test_objects/meshes/visual/bowling_pin.obj" />
 	        </geometry>
 	    </visual>
-	</static_object>
+	</static_object> -->
 	
 <light name="light1" type="directional">
 		<position xyz="2.0 -2.0 2.0" />
@@ -1097,14 +1162,19 @@
 		<lookat xyz="0.0 0.0 0.0" />
 	</light>
 
+<light name="light3" type="directional">
+		<position xyz="0.0 7.4 5" />
+		<lookat xyz="0.0 7.4 0.5" />
+	</light>
+
 	<camera name="camera_fixed">
-		<!-- <position xyz="0 -3.5 2.5" /> -->
+		<position xyz="0 -3.5 2" />
 		<!-- <position xyz = "0 -3.5 7" /> -->
 		<!-- <position xyz = "3.5 0 1" newest/> -->
-		<position xyz = "0 3.5 1"/>
+		<!-- <position xyz = "0 3.5 1"/> -->
 		<vertical xyz="0.0 0.0 5.0" />
-		<!-- <lookat xyz="0 3 0.5" /> -->
-		<lookat xyz="0 0 1" />
+		<lookat xyz="0 2.5 0.5" />
+		<!-- <lookat xyz="0 0 1" /> -->
 	</camera>
 
 </world>

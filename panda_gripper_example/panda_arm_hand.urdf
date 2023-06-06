@@ -287,7 +287,6 @@
       </visual>    -->
     </link>
 
-
     <link name="rightfinger_bottom">
       <inertial>
         <origin xyz="0 0 0.05" rpy="0 -0 0" />
