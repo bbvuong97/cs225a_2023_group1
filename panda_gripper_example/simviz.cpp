@@ -130,14 +130,14 @@ int main() {
 	}
 
     // set co-efficient of restition to zero for force control
-    sim->setCollisionRestitution(0.0);
+  sim->setCollisionRestitution(0.0);
 	sim->setCollisionRestitution("ball",0.0);
 
     // set co-efficient of friction
-    sim->setCoeffFrictionStatic(0.0);
-    sim->setCoeffFrictionDynamic(0.0);
-	sim->setCoeffFrictionStatic("ball",0.5);
-	sim->setCoeffFrictionDynamic("ball",0.5);
+	sim->setCoeffFrictionStatic(0.0);
+	sim->setCoeffFrictionDynamic(0.0);
+	sim->setCoeffFrictionStatic("ball",1.0);
+	sim->setCoeffFrictionDynamic("ball",1.0);
 	sim->setCoeffFrictionStatic(robot_name,"leftfinger",.8);
 	sim->setCoeffFrictionDynamic(robot_name,"rightfinger",.8);
 	sim->setCoeffFrictionDynamic(robot_name,"leftfinger_bottom",.8);
@@ -383,12 +383,39 @@ void simulation(Sai2Model::Sai2Model* robot, Simulation::Sai2Simulation* sim)
 
 				if (check_pin_reset_status) {
 					for (int i = 0; i < n_objects-1; ++i) {
-						object_positions_init[i][2] -=.5;
+						//object_positions_init[i][2] -=.25;
 	 					sim->setObjectPosition(object_names[i], object_positions_init[i], object_orientations_init[i]);
 						//sim->getObjectPosition(object_names[i], object_pos[i], object_ori[i]);
+						auto _object = sim->_world->getBaseNode(object_names[i]);
+						_object->enableDynamics(true);
+						_object->markForUpdate(true);
+						_object->m_dynamicJoints[2]->setForce(-0.001);
+						_object->m_dynamicJoints[0]->setVel(0);
+						_object->m_dynamicJoints[1]->setVel(0);
+						_object->m_dynamicJoints[2]->setVel(0);
+						// _object->m_dynamicJoints[3]->setVel(0);
+						// _object->m_dynamicJoints[4]->setVel(0);
+						// _object->m_dynamicJoints[5]->setVel(0);
 	 				}
 					sim->setObjectPosition(object_names[10], object_positions_init[10], object_orientations_init[10]);
-	 			// 	//redis_client.set(RESET_PINS, "false");
+					sim->setCollisionRestitution("ball", 0.0);
+					sim->setCoeffFrictionStatic("ball",1.0);
+					sim->setCoeffFrictionDynamic("ball",1.0);
+					sim->setCoeffFrictionStatic(robot_name,"leftfinger",.8);
+					sim->setCoeffFrictionDynamic(robot_name,"rightfinger",.8);
+					sim->setCoeffFrictionDynamic(robot_name,"leftfinger_bottom",.8);
+					sim->setCoeffFrictionDynamic(robot_name,"rightfinger_bottom",.8);
+					auto _object = sim->_world->getBaseNode("ball");
+					_object->enableDynamics(true);
+					_object->markForUpdate(true);
+					_object->m_dynamicJoints[2]->setForce(-0.001);
+					_object->m_dynamicJoints[0]->setVel(0);
+					_object->m_dynamicJoints[1]->setVel(0);
+					_object->m_dynamicJoints[2]->setVel(0);
+					// _object->m_dynamicJoints[3]->setVel(0);
+					// _object->m_dynamicJoints[4]->setVel(0);
+					// _object->m_dynamicJoints[5]->setVel(0);
+	 				redis_client.set(RESET_PINS, "false");
 				// 	// cout << "pin1 pos: " << object_pos[0].transpose() << "\n";
 				// 	// cout << "pin2 pos: " << object_pos[1].transpose() << "\n";
 				// 	// cout << "pin3 pos: " << object_pos[2].transpose() << "\n";

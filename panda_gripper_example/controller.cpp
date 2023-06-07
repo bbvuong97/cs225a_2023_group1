@@ -562,6 +562,7 @@ int main() {
 
 						posori_task->_desired_position = desiredthrowtraj;
 						posori_task->_desired_orientation = hor_orient;
+						//base_task->_desired_position = base_pose_desired;
 						base_task->_desired_position(0) = base_pose_desired(0);
 						base_task->_desired_position(2) = base_pose_desired(2);
 						base_task->_desired_position(1) = desiredthrowtraj(1)-.2;
@@ -571,11 +572,11 @@ int main() {
 						// base_task->_kv = 20;
 						// base_task->_kp = 0.1;
 
-						// base_task->_kv = 160;
-						// base_task->_kp = 1.6;
+						base_task->_kv = 160;
+						base_task->_kp = 1.6;
 
-						base_task->_kv = 200;
-						base_task->_kp = 2;
+						// base_task->_kv = 200;
+						// base_task->_kp = 2;
 
 						//cout << "Difference: " << (centroid_vec - zero_offset).transpose() << "\n";
 
@@ -680,7 +681,7 @@ int main() {
 
 					cout << "error arm " << (robot->_q.segment(3,7) - q_init_desired).norm() << "\n";
 
-					if ( (robot->_q.segment(3,7) - q_init_desired).norm() < 0.2 ) {
+					if ( (robot->_q.segment(3,7) - q_init_desired).norm() < 0.3 ) {
 						cout << "Move to state 12: RETURN_HOME_BASE\n" << endl;
 
 						base_task->reInitializeTask();
@@ -708,7 +709,7 @@ int main() {
 
 					cout << "base pos" << robot->_q.head(3).transpose() << "\n";
 
-					if ( (robot->_q.head(3) - base_pose_center).norm() < 0.005 ) {
+					if ( (robot->_q.head(3) - base_pose_center).norm() < 0.05 ) {
 						cout << "Move back to state 1: BASE\n" << endl;
 						joint_task->reInitializeTask();
 						posori_task->reInitializeTask();
@@ -716,6 +717,7 @@ int main() {
 						joint_task->_use_velocity_saturation_flag = false;
 						joint_task->_desired_position = q_init_desired;
 						base_pose_desired << -.25, -.25, 0;
+						redis_client.set(RESET_PINS, "true");
 						state = BASE;
 					}
 			} 

@@ -6,16 +6,16 @@ r = redis.Redis()
 def check_key_pressed(key):
     if key == 'a': # move left
         r.set("MOVE_LEFT", "1")
-        print("\nThe 'a' key has been pressed!")
+        print("\nThe 'a' key has been pressed! Moving Left")
     elif key == 'd': # move right
         r.set("MOVE_RIGHT", "1")
-        print("\nThe 'd' key has been pressed!")
+        print("\nThe 'd' key has been pressed! Moving Right")
     elif key == 's':
         r.set("NEXT_STATE", "1")
-        print("\nThe 's' key has been pressed!")
+        print("\nThe 's' key has been pressed! Switching to user interactive mode")
     elif key == 't':
         r.set("START_TRACKING", "1")
-        print("\nThe 't' key has been pressed!")    
+        print("\nThe 't' key has been pressed! Starting camera hand tracking")    
     else:
         print("\nInput not accepted.")
 
