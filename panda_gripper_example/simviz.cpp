@@ -33,12 +33,17 @@ const string robot_name = "panda_arm_hand";
 const string camera_name = "camera_fixed";
 const string base_link_name = "link0";
 const string ee_link_name = "link7";
+const string pin_file = "./resources/pin.urdf";
+const string ball_file = "./resources/ball.urdf";
 //const string audio_file = "/Users/melissakl/Documents/sai2/apps/cs225a_2023_group1/panda_gripper_example/WiiBowling.wav";
 
 // dynamic objects information
 //const vector<string> object_names = {"ball","bowling_pin","bowling_pin2"};
-const vector<string> object_names = {"bowling_pin", "bowling_pin2", "bowling_pin3","bowling_pin4","bowling_pin5","bowling_pin6","bowling_pin7","bowling_pin8","bowling_pin9","bowling_pin10","ball"};
+const vector<string> object_names = {"bowling_pin1", "bowling_pin2", "bowling_pin3","bowling_pin4","bowling_pin5","bowling_pin6","bowling_pin7","bowling_pin8","bowling_pin9","bowling_pin10"};
 //const vector<string> pin_names = {"bowling_pin", "bowling_pin2", "bowling_pin3","bowling_pin4","bowling_pin5","bowling_pin6","bowling_pin7","bowling_pin8","bowling_pin9","bowling_pin10"};
+
+vector<VectorXd> object_init;
+VectorXd ball_init;
 
 vector<Vector3d> object_pos;
 vector<Vector3d> object_lin_vel;
@@ -56,7 +61,7 @@ vector<Quaterniond> object_orientations_init(object_names.size());
 RedisClient redis_client; 
 
 // simulation thread
-void simulation(Sai2Model::Sai2Model* robot, Simulation::Sai2Simulation* sim);
+void simulation(Sai2Model::Sai2Model* robot, Sai2Model::Sai2Model* ball, vector<Sai2Model::Sai2Model*> objects, Simulation::Sai2Simulation* sim);
 
 // function for converting string to bool
 bool string_to_bool(const std::string& x);
@@ -112,32 +117,70 @@ int main() {
 	// robot->_dq = VectorXd::Zero(dof);
 	robot->updateModel();
 
+	// load objects
+	vector<Sai2Model::Sai2Model*> objects;
+	auto pin1 = new Sai2Model::Sai2Model(pin_file, false);
+	auto pin2 = new Sai2Model::Sai2Model(pin_file, false);
+	auto pin3 = new Sai2Model::Sai2Model(pin_file, false);
+	auto pin4 = new Sai2Model::Sai2Model(pin_file, false);
+	auto pin5 = new Sai2Model::Sai2Model(pin_file, false);
+	auto pin6 = new Sai2Model::Sai2Model(pin_file, false);
+	auto pin7 = new Sai2Model::Sai2Model(pin_file, false);
+	auto pin8 = new Sai2Model::Sai2Model(pin_file, false);
+	auto pin9 = new Sai2Model::Sai2Model(pin_file, false);
+	auto pin10 = new Sai2Model::Sai2Model(pin_file, false);
+	objects.push_back(pin1);
+	objects.push_back(pin2);
+	objects.push_back(pin3);
+	objects.push_back(pin4);
+	objects.push_back(pin5);
+	objects.push_back(pin6);
+	objects.push_back(pin7);
+	objects.push_back(pin8);
+	objects.push_back(pin9);
+	objects.push_back(pin10);
+	for (int i = 0; i < n_objects; ++i) {
+		// objects.push_back(new Sai2Model::Sai2Model(pin_file, false));
+		objects[i]->updateModel();
+	}
+
+	auto ball = new Sai2Model::Sai2Model(ball_file, false);
+	// ball->_q.head(3) << -0.8, -.5, .11;
+	ball->updateModel();
+
 	// load simulation world
 	auto sim = new Simulation::Sai2Simulation(world_file, false);
 	sim->setJointPositions(robot_name, robot->_q);
 	sim->setJointVelocities(robot_name, robot->_dq);
 
-	// fill in object information 
+	// // fill in object information 
+	// for (int i = 0; i < n_objects; ++i) {
+	// 	Vector3d _object_pos, _object_lin_vel, _object_ang_vel;
+	// 	Quaterniond _object_ori;
+	// 	sim->getObjectPosition(object_names[i], _object_pos, _object_ori);
+	// 	sim->getObjectVelocity(object_names[i], _object_lin_vel, _object_ang_vel);
+	// 	object_pos.push_back(_object_pos);
+	// 	object_lin_vel.push_back(_object_lin_vel);
+	// 	object_ori.push_back(_object_ori);
+	// 	object_ang_vel.push_back(_object_ang_vel);
+	// }
+
 	for (int i = 0; i < n_objects; ++i) {
-		Vector3d _object_pos, _object_lin_vel, _object_ang_vel;
-		Quaterniond _object_ori;
-		sim->getObjectPosition(object_names[i], _object_pos, _object_ori);
-		sim->getObjectVelocity(object_names[i], _object_lin_vel, _object_ang_vel);
-		object_pos.push_back(_object_pos);
-		object_lin_vel.push_back(_object_lin_vel);
-		object_ori.push_back(_object_ori);
-		object_ang_vel.push_back(_object_ang_vel);
+		sim->setJointPositions(object_names[i], objects[i]->_q);
+		object_init.push_back(objects[i]->_q);
 	}
+	sim->setJointPositions("bowling_ball", ball->_q);
+	ball_init = ball->_q;
 
     // set co-efficient of restition to zero for force control
   sim->setCollisionRestitution(0.0);
-	sim->setCollisionRestitution("ball",0.0);
+	sim->setCollisionRestitution("bowling_ball", "link6",0.0);
 
     // set co-efficient of friction
 	sim->setCoeffFrictionStatic(0.0);
 	sim->setCoeffFrictionDynamic(0.0);
-	sim->setCoeffFrictionStatic("ball",1.0);
-	sim->setCoeffFrictionDynamic("ball",1.0);
+	sim->setCoeffFrictionStatic("bowling_ball", "link6", 1.0);
+	sim->setCoeffFrictionDynamic("bowling_ball", "link6", 1.0);
 	sim->setCoeffFrictionStatic(robot_name,"leftfinger",.8);
 	sim->setCoeffFrictionDynamic(robot_name,"rightfinger",.8);
 	sim->setCoeffFrictionDynamic(robot_name,"leftfinger_bottom",.8);
@@ -157,9 +200,9 @@ int main() {
 		// sim->setCoeffFrictionStatic("bowling_pin10",0.05);
 
 
-	for (int i = 0; i < n_objects; ++i) {
-	 	sim->getObjectPosition(object_names[i], object_positions_init[i], object_orientations_init[i]);
-	 }
+	// for (int i = 0; i < n_objects; ++i) {
+	//  	sim->getObjectPosition(object_names[i], object_positions_init[i], object_orientations_init[i]);
+	//  }
 
 	// cout << "init pin1 pos: " << object_positions_init[0].transpose() << "\n";
 	// cout << "init pin2 pos: " << object_positions_init[1].transpose() << "\n";
@@ -211,7 +254,7 @@ int main() {
 
 	// start simulation thread
 	fSimulationRunning = true;
-	thread sim_thread(simulation, robot, sim);
+	thread sim_thread(simulation, robot, ball, objects, sim);
 
 	// initialize glew
 	glewInitialize();
@@ -229,8 +272,10 @@ int main() {
 		glfwGetFramebufferSize(window, &width, &height);
 		graphics->updateGraphics(robot_name, robot); 
 		for (int i = 0; i < n_objects; ++i) {
-			graphics->updateObjectGraphics(object_names[i], object_pos[i], object_ori[i]);
+			// graphics->updateObjectGraphics(object_names[i], object_pos[i], object_ori[i]);
+			graphics->updateGraphics(object_names[i], objects[i]);
 		}
+		graphics->updateGraphics("bowling_ball", ball);
 		graphics->render(camera_name, width, height);
 
 		// swap buffers
@@ -323,7 +368,7 @@ int main() {
 
 //------------------------------------------------------------------------------
 
-void simulation(Sai2Model::Sai2Model* robot, Simulation::Sai2Simulation* sim)
+void simulation(Sai2Model::Sai2Model* robot, Sai2Model::Sai2Model* ball, vector<Sai2Model::Sai2Model*> objects, Simulation::Sai2Simulation* sim)
 {
 	// prepare simulation
 	int dof = robot->dof();
@@ -362,19 +407,20 @@ void simulation(Sai2Model::Sai2Model* robot, Simulation::Sai2Simulation* sim)
 
 	// start simulation 
 	while (fSimulationRunning) {
-    // fTimerDidSleep = timer.waitForNextLoop(); // commented out to let current simulation loop finish before next loop
+    // fTimerDidSleep = timer.waitForNextLoop(); // commented out to let current simulation ` finish before next loop
 
     // run simulation loop when (1) control loop is done
 		if(fControllerLoopDone) {
+			// if (true) {
 				// execute redis read callback
 				redis_client.executeReadCallback(0);
 
 				change_ball_restitution = string_to_bool(redis_client.get(CHANGE_BALL_RESTITUTION_KEY));
 
 				if (change_ball_restitution){
-					sim->setCollisionRestitution("ball", 1.0);
-					sim->setCoeffFrictionStatic("ball",0.001);
-					sim->setCoeffFrictionDynamic("ball",0.001);
+					sim->setCollisionRestitution("bowling_ball", "link6", 1.0);
+					sim->setCoeffFrictionStatic("bowling_ball", "link6", 0.001);
+					sim->setCoeffFrictionDynamic("bowling_ball", "link6", 0.001);
 					
 					redis_client.set(CHANGE_BALL_RESTITUTION_KEY, "false");
 				}
@@ -383,35 +429,46 @@ void simulation(Sai2Model::Sai2Model* robot, Simulation::Sai2Simulation* sim)
 
 				if (check_pin_reset_status) {
 					for (int i = 0; i < n_objects-1; ++i) {
+						objects[i]->_q = object_init[i];
+						objects[i]->_dq.setZero();
+						objects[i]->updateModel();
+						ball->_q.head(3) = ball_init.head(3);// + Vector3d(-0.8, -.5, .12);
+						ball->_dq.setZero();
+						ball->updateModel();
 						//object_positions_init[i][2] -=.25;
-	 					sim->setObjectPosition(object_names[i], object_positions_init[i], object_orientations_init[i]);
+	 					// sim->setObjectPosition(object_names[i], object_positions_init[i], object_orientations_init[i]);
 						//sim->getObjectPosition(object_names[i], object_pos[i], object_ori[i]);
-						auto _object = sim->_world->getBaseNode(object_names[i]);
-						_object->enableDynamics(true);
-						_object->markForUpdate(true);
-						_object->m_dynamicJoints[2]->setForce(-0.001);
-						_object->m_dynamicJoints[0]->setVel(0);
-						_object->m_dynamicJoints[1]->setVel(0);
-						_object->m_dynamicJoints[2]->setVel(0);
+						// auto _object = sim->_world->getBaseNode(object_names[i]);
+						// _object->enableDynamics(true);
+						// _object->markForUpdate(true);
+						// _object->m_dynamicJoints[2]->setForce(-0.001);
+						// _object->m_dynamicJoints[0]->setVel(0);
+						// _object->m_dynamicJoints[1]->setVel(0);
+						// _object->m_dynamicJoints[2]->setVel(0);
 						// _object->m_dynamicJoints[3]->setVel(0);
 						// _object->m_dynamicJoints[4]->setVel(0);
 						// _object->m_dynamicJoints[5]->setVel(0);
+
+						for (int i = 0; i < n_objects; ++i) {
+							sim->setJointPositions(object_names[i], objects[i]->_q);
+						}
+						sim->setJointPositions("bowling_ball", ball->_q);
 	 				}
-					sim->setObjectPosition(object_names[10], object_positions_init[10], object_orientations_init[10]);
-					sim->setCollisionRestitution("ball", 0.0);
-					sim->setCoeffFrictionStatic("ball",1.0);
-					sim->setCoeffFrictionDynamic("ball",1.0);
+					// sim->setObjectPosition(object_names[10], object_positions_init[10], object_orientations_init[10]);
+					sim->setCollisionRestitution("bowling_ball", "link6", 0.0);
+					sim->setCoeffFrictionStatic("bowling_ball", "link6", 1.0);
+					sim->setCoeffFrictionDynamic("bowling_ball", "link6", 1.0);
 					sim->setCoeffFrictionStatic(robot_name,"leftfinger",.8);
 					sim->setCoeffFrictionDynamic(robot_name,"rightfinger",.8);
 					sim->setCoeffFrictionDynamic(robot_name,"leftfinger_bottom",.8);
 					sim->setCoeffFrictionDynamic(robot_name,"rightfinger_bottom",.8);
-					auto _object = sim->_world->getBaseNode("ball");
-					_object->enableDynamics(true);
-					_object->markForUpdate(true);
-					_object->m_dynamicJoints[2]->setForce(-0.001);
-					_object->m_dynamicJoints[0]->setVel(0);
-					_object->m_dynamicJoints[1]->setVel(0);
-					_object->m_dynamicJoints[2]->setVel(0);
+					// auto _object = sim->_world->getBaseNode("ball");
+					// _object->enableDynamics(true);
+					// _object->markForUpdate(true);
+					// _object->m_dynamicJoints[2]->setForce(-0.001);
+					// _object->m_dynamicJoints[0]->setVel(0);
+					// _object->m_dynamicJoints[1]->setVel(0);
+					// _object->m_dynamicJoints[2]->setVel(0);
 					// _object->m_dynamicJoints[3]->setVel(0);
 					// _object->m_dynamicJoints[4]->setVel(0);
 					// _object->m_dynamicJoints[5]->setVel(0);
@@ -456,11 +513,22 @@ void simulation(Sai2Model::Sai2Model* robot, Simulation::Sai2Simulation* sim)
 				gripper_q = robot->_q.tail(4);
 				gripper_dq = robot->_dq.tail(4);
 
-				// // get dynamic object positions
+				// get object positions
 				for (int i = 0; i < n_objects; ++i) {
-					sim->getObjectPosition(object_names[i], object_pos[i], object_ori[i]);
-					sim->getObjectVelocity(object_names[i], object_lin_vel[i], object_ang_vel[i]);
+					sim->getJointPositions(object_names[i], objects[i]->_q);
+					sim->getJointVelocities(object_names[i], objects[i]->_dq);
+					objects[i]->updateModel();
 				}
+
+				sim->getJointPositions("bowling_ball", ball->_q);
+				sim->getJointVelocities("bowling_ball", ball->_dq);
+				ball->updateModel();
+
+				// // // get dynamic object positions
+				// for (int i = 0; i < n_objects; ++i) {
+				// 	sim->getObjectPosition(object_names[i], object_pos[i], object_ori[i]);
+				// 	sim->getObjectVelocity(object_names[i], object_lin_vel[i], object_ang_vel[i]);
+				// }
 
 				// simulation loop is done
 				fSimulationLoopDone = true;

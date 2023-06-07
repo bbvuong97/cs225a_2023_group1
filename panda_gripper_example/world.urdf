@@ -7,6 +7,66 @@
 		<origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
 	</robot>
 
+	<robot name="bowling_pin1">
+		<model dir="./resources" path="pin.urdf" name="bowling_pin" />
+		<origin xyz="0.0 7.4 0.1" rpy="0 0 0" />
+	</robot>
+
+	<robot name="bowling_pin2">	
+		<model dir="./resources" path="pin.urdf" name="bowling_pin" />
+		<origin xyz="0.1 7.6 0.1" rpy="0 0 0" />
+	</robot>
+
+	<robot name="bowling_pin3">
+		<model dir="./resources" path="pin.urdf" name="bowling_pin" />
+		<origin xyz="-0.1 7.6 0.1" rpy="0 0 0" />
+	</robot>
+
+	<robot name="bowling_pin4">
+		<model dir="./resources" path="pin.urdf" name="bowling_pin" />
+		<origin xyz="0.2 7.8 0.1" rpy="0 0 0" />
+	</robot>
+
+	<robot name="bowling_pin5">
+		<model dir="./resources" path="pin.urdf" name="bowling_pin" />
+		<origin xyz="0.0 7.8 0.1" rpy="0 0 0" />
+	</robot>
+
+	<robot name="bowling_pin6">
+		<model dir="./resources" path="pin.urdf" name="bowling_pin" />
+		<origin xyz="-0.2 7.8 0.1" rpy="0 0 0" />
+	</robot>
+
+	<robot name="bowling_pin7">
+		<model dir="./resources" path="pin.urdf" name="bowling_pin" />
+		<origin xyz="0.3 8.0 0.1" rpy="0 0 0" />
+	</robot>
+
+	<robot name="bowling_pin8">
+		<model dir="./resources" path="pin.urdf" name="bowling_pin" />
+		<origin xyz="0.1 8.0 0.1" rpy="0 0 0" />
+	</robot>
+
+	<robot name="bowling_pin9">
+		<model dir="./resources" path="pin.urdf" name="bowling_pin" />
+		<origin xyz="-0.1 8.0 0.1" rpy="0 0 0" />
+	</robot>
+
+	<robot name="bowling_pin10">
+		<model dir="./resources" path="pin.urdf" name="bowling_pin" />
+		<origin xyz="-0.3 8.0 0.1" rpy="0 0 0" />
+	</robot>
+
+	<!-- <robot name="bowling_pin11">
+		<model dir="./resources" path="pin.urdf" name="bowling_pin" />
+		<origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+	</robot> -->
+
+	<robot name="bowling_ball">
+		<model dir="./resources" path="ball.urdf" name="bowling_ball" />
+		<origin xyz="-0.8 -.5 .12" rpy="0 0 0" />
+	</robot>
+
 	<static_object name="Base">
 		<origin xyz="0.0 -2.1 0.0" rpy="0 0 0" />
 	    <visual>
@@ -34,12 +94,12 @@
         	<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
       	</inertial>
 
-	    <!-- <visual>
+	    <visual>
 	        <origin xyz="0 0 0" rpy="0 0 0" />
 			<geometry>
 	            <mesh filename="../../model/test_objects/meshes/visual/basket_small.obj" />
 	        </geometry>
-	    </visual> -->
+	    </visual>
 
 	    <collision>
 	        <origin xyz="0.0 -0.4 .025" rpy="0 0 0" />
@@ -48,15 +108,15 @@
 	        </geometry>
 	    </collision>
 
-			<visual>
+			<!-- <visual>
 	        <origin xyz="0.0 -0.4 .025" rpy="0 0 0" />
 	        <geometry>
 	            <box size=".457 1.5 .05" />
 	        </geometry>
-	    </visual>
+	    </visual> -->
 	</static_object>
 
-	<static_object name="Lane_ground">
+	<!-- <static_object name="Lane_ground">
 		<origin xyz="0.0 0.4 0.0" rpy="0 -0 0" />
 	    <visual>
 	        <origin xyz="0.0 0.0 -0.00635" rpy="1.5708 0 0" />
@@ -70,9 +130,9 @@
 	            <box size="1.0 10.0 0.0127" />
 	        </geometry>
 	  </collision>
-	</static_object>
+	</static_object> -->
 
-	<dynamic_object name="ball">
+	<!-- <dynamic_object name="ball">
 		<origin xyz="-0.8 -.5 .11" rpy="0 0 0" />
 		<inertial>
         	<origin xyz="0 0 0" rpy="0 0 0" />
@@ -116,13 +176,6 @@
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
 	    </collision>
-
-			<!-- <visual>
-	        <origin xyz="0 0 0.01" rpy="0 0 0" />
-	        <geometry>
-	            <cylinder radius=".055" length=".35"/>
-	        </geometry>
-	    </visual> -->
 	</dynamic_object>
 
 	<dynamic_object name="bowling_pin2">
@@ -330,7 +383,7 @@
 	            <cylinder radius=".055" length=".35"/>
 	        </geometry>
 	    </collision>
-	</dynamic_object>
+	</dynamic_object> -->
 	
 
 	<static_object name="Arenawall">

@@ -681,7 +681,7 @@ int main() {
 
 					cout << "error arm " << (robot->_q.segment(3,7) - q_init_desired).norm() << "\n";
 
-					if ( (robot->_q.segment(3,7) - q_init_desired).norm() < 0.3 ) {
+					if ( (robot->_q.segment(3,7) - q_init_desired).norm() < 0.5 ) {
 						cout << "Move to state 12: RETURN_HOME_BASE\n" << endl;
 
 						base_task->reInitializeTask();
