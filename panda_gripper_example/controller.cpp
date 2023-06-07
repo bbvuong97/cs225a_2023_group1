@@ -571,8 +571,11 @@ int main() {
 						// base_task->_kv = 20;
 						// base_task->_kp = 0.1;
 
-						base_task->_kv = 160;
-						base_task->_kp = 1.6;
+						// base_task->_kv = 160;
+						// base_task->_kp = 1.6;
+
+						base_task->_kv = 200;
+						base_task->_kp = 2;
 
 						//cout << "Difference: " << (centroid_vec - zero_offset).transpose() << "\n";
 
@@ -648,20 +651,23 @@ int main() {
 						//joint_task->_desired_position(0) = 0;
 						//q_gripper_desired.setZero();
 						base_task->_desired_position = robot->_q.head(3);
+						base_task->_kp = 400;
+						base_task->_kv = 40;
 
 						state = RETURN_HOME_ARM;
+						continue;
 					}
 
 
 			} else if (state==RETURN_HOME_ARM){
-					redis_client.set(RESET_PINS, "true");
+					// redis_client.set(RESET_PINS, "true");
 					N_prec.setIdentity();
-					base_task->updateTaskModel(N_prec);
-					N_prec = base_task->_N;	
-			  	joint_task->updateTaskModel(N_prec);
+					joint_task->updateTaskModel(N_prec);
+					N_prec = joint_task->_N;	
+			  	base_task->updateTaskModel(N_prec);
 
 					joint_task->_use_velocity_saturation_flag = true;
-					joint_task->_saturation_velocity << 2,2,2,2,2,2,2; 
+					joint_task->_saturation_velocity << 4,4,4,4,4,4,4;
 
 					base_task->computeTorques(base_task_torques);
 					joint_task->computeTorques(joint_task_torques);
@@ -672,7 +678,9 @@ int main() {
 					gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 					command_torques.tail(4) = gripper_command_torques;
 
-					if ( (robot->_q.segment(3,7) - q_init_desired).norm() < 0.005 ) {
+					cout << "error arm " << (robot->_q.segment(3,7) - q_init_desired).norm() << "\n";
+
+					if ( (robot->_q.segment(3,7) - q_init_desired).norm() < 0.2 ) {
 						cout << "Move to state 12: RETURN_HOME_BASE\n" << endl;
 
 						base_task->reInitializeTask();

@@ -33,7 +33,7 @@ const string robot_name = "panda_arm_hand";
 const string camera_name = "camera_fixed";
 const string base_link_name = "link0";
 const string ee_link_name = "link7";
-const string audio_file = "/Users/melissakl/Documents/sai2/apps/cs225a_2023_group1/panda_gripper_example/WiiBowling.wav";
+//const string audio_file = "/Users/melissakl/Documents/sai2/apps/cs225a_2023_group1/panda_gripper_example/WiiBowling.wav";
 
 // dynamic objects information
 //const vector<string> object_names = {"ball","bowling_pin","bowling_pin2"};
@@ -48,8 +48,8 @@ const int n_objects = object_names.size();
 
 //vector<Quaterniond> pin_ori_init(pin_names.size());
 //vector<Quaterniond> pin_ori(pin_names.size());
-vector<Vector3d> object_positions(n_objects);
-vector<Quaterniond> object_orientations(n_objects);
+vector<Vector3d> object_positions_init(object_names.size());
+vector<Quaterniond> object_orientations_init(object_names.size());
 //bool reset_pins = false;
 
 // redis client 
@@ -106,29 +106,6 @@ int main() {
 	//graphics->showLinkFrame(true, robot_name, ee_link_name, 0.15);  // can add frames for different links
 	graphics->getCamera(camera_name)->setClippingPlanes(0.1, 50);  // set the near and far clipping planes 
 
-	//AUDIO//
-	// create an audio device to play sounds
-	cAudioDevice* audioDevice = new cAudioDevice;
-	cAudioBuffer* audioBuffer = new cAudioBuffer;
-	cAudioSource* audioSource = new cAudioSource;
-
-	graphics->getCamera(camera_name)->attachAudioDevice(audioDevice);
-	
-	// load a WAV file
-	audioBuffer->loadFromFile(audio_file);
-	
-	// assign audio buffer to audio source
-	audioSource->setAudioBuffer(audioBuffer);
-	// loop playing of sound
-	audioSource->setLoop(true);
-	// set audio gain
-	audioSource->setGain(1.0);
-	// set audio pitch
-	audioSource->setPitch(0.2);
-	// play sound
-	audioSource->play();
-	//AUDIO//
-
 	// load robots
 	auto robot = new Sai2Model::Sai2Model(robot_file, false);
 	// robot->_q = VectorXd::Zero(dof);
@@ -181,8 +158,13 @@ int main() {
 
 
 	for (int i = 0; i < n_objects; ++i) {
-	 	sim->getObjectPosition(object_names[i], object_pos[i], object_ori[i]);
+	 	sim->getObjectPosition(object_names[i], object_positions_init[i], object_orientations_init[i]);
 	 }
+
+	// cout << "init pin1 pos: " << object_positions_init[0].transpose() << "\n";
+	// cout << "init pin2 pos: " << object_positions_init[1].transpose() << "\n";
+	// cout << "init pin3 pos: " << object_positions_init[2].transpose() << "\n";
+	// cout << "init ball pos: " << object_positions_init[10].transpose() << "\n";
 
 	/*------- Set up visualization -------*/
 	// set up error callback
@@ -400,10 +382,17 @@ void simulation(Sai2Model::Sai2Model* robot, Simulation::Sai2Simulation* sim)
 				check_pin_reset_status = string_to_bool(redis_client.get(RESET_PINS));
 
 				if (check_pin_reset_status) {
-					for (int i = 0; i < n_objects; ++i) {
-	 					sim->setObjectPosition(object_names[i], object_pos[i], object_ori[i]);
+					for (int i = 0; i < n_objects-1; ++i) {
+						object_positions_init[i][2] -=.5;
+	 					sim->setObjectPosition(object_names[i], object_positions_init[i], object_orientations_init[i]);
+						//sim->getObjectPosition(object_names[i], object_pos[i], object_ori[i]);
 	 				}
-	 				//redis_client.set(RESET_PINS, "false");
+					sim->setObjectPosition(object_names[10], object_positions_init[10], object_orientations_init[10]);
+	 			// 	//redis_client.set(RESET_PINS, "false");
+				// 	// cout << "pin1 pos: " << object_pos[0].transpose() << "\n";
+				// 	// cout << "pin2 pos: " << object_pos[1].transpose() << "\n";
+				// 	// cout << "pin3 pos: " << object_pos[2].transpose() << "\n";
+				// 	// cout << "ball pos: " << object_pos[10].transpose() << "\n";
 				}
 
 				// apply gravity compensation 
