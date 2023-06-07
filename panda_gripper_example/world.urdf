@@ -34,12 +34,12 @@
         	<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
       	</inertial>
 
-	    <!-- <visual>
+	    <visual>
 	        <origin xyz="0 0 0" rpy="0 0 0" />
 			<geometry>
 	            <mesh filename="../../model/test_objects/meshes/visual/basket_small.obj" />
 	        </geometry>
-	    </visual> -->
+	    </visual>
 
 	    <collision>
 	        <origin xyz="0.0 -0.4 .025" rpy="0 0 0" />
@@ -48,12 +48,12 @@
 	        </geometry>
 	    </collision>
 
-			<visual>
+			<!-- <visual>
 	        <origin xyz="0.0 -0.4 .025" rpy="0 0 0" />
 	        <geometry>
 	            <box size=".457 1.5 .05" />
 	        </geometry>
-	    </visual>
+	    </visual> -->
 	</static_object>
 
 	<static_object name="Lane_ground">
@@ -1185,9 +1185,9 @@
 		<!-- <position xyz="0 -3.5 2" /> -->
 		<!-- <position xyz = "0 -3.5 7" /> -->
 		<!-- <position xyz = "3.5 0 1" newest/> -->
-		<position xyz = "0 3.5 1"/>
+		<position xyz = "0 5 1"/>
 		<vertical xyz="0.0 0.0 5.0" />
-		<lookat xyz="0 2.5 0.5" />
+		<lookat xyz="0 1 0.5" />
 		<!-- <lookat xyz="0 0 1" /> -->
 	</camera>
 
