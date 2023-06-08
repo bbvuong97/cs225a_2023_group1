@@ -86,16 +86,32 @@ bool fTransZn = false;
 bool fRotPanTilt = false;
 bool fRobotLinkSelect = false;
 
-Sai2Model::Sai2Model* createNewRobot() {
+int main() {
+	cout << "Loading URDF world model file: " << world_file << endl;
+
+	// start redis client
+	redis_client = RedisClient();
+	redis_client.connect();
+
+	// set up signal handler
+	signal(SIGABRT, &sighandler);
+	signal(SIGTERM, &sighandler);
+	signal(SIGINT, &sighandler);
+
+	// load graphics scene
+	auto graphics = new Sai2Graphics::Sai2Graphics(world_file, true);
+	Eigen::Vector3d camera_pos, camera_lookat, camera_vertical;
+	graphics->getCameraPose(camera_name, camera_pos, camera_vertical, camera_lookat);
+	graphics->_world->setBackgroundColor(66.0/255, 135.0/255, 245.0/255);  // set blue background 	
+	//graphics->showLinkFrame(true, robot_name, ee_link_name, 0.15);  // can add frames for different links
+	graphics->getCamera(camera_name)->setClippingPlanes(0.1, 50);  // set the near and far clipping planes 
+
 	// load robots
 	auto robot = new Sai2Model::Sai2Model(robot_file, false);
 	// robot->_q = VectorXd::Zero(dof);
 	// robot->_dq = VectorXd::Zero(dof);
 	robot->updateModel();
-	return robot;
-}
 
-Simulation::Sai2Simulation* createNewSim(Sai2Model::Sai2Model* robot) {
 	// load simulation world
 	auto sim = new Simulation::Sai2Simulation(world_file, false);
 	sim->setJointPositions(robot_name, robot->_q);
@@ -150,41 +166,6 @@ Simulation::Sai2Simulation* createNewSim(Sai2Model::Sai2Model* robot) {
 	// cout << "init pin3 pos: " << object_positions_init[2].transpose() << "\n";
 	// cout << "init ball pos: " << object_positions_init[10].transpose() << "\n";
 
-	// init redis client values 
-	redis_client.set(CONTROLLER_RUNNING_KEY, "0");  
-	redis_client.setEigenMatrixJSON(JOINT_ANGLES_KEY, robot->_q.head(10)); 
-	redis_client.setEigenMatrixJSON(JOINT_VELOCITIES_KEY, robot->_dq.head(10));
-	redis_client.set(SIMULATION_LOOP_DONE_KEY, bool_to_string(fSimulationLoopDone));
-  redis_client.set(CONTROLLER_LOOP_DONE_KEY, bool_to_string(fControllerLoopDone));
-	redis_client.set(CHANGE_BALL_RESTITUTION_KEY, "false");
-	redis_client.set(RESET_PINS, "false");
-
-	return sim;
-}
-
-int main() {
-	cout << "Loading URDF world model file: " << world_file << endl;
-
-	// start redis client
-	redis_client = RedisClient();
-	redis_client.connect();
-
-	// set up signal handler
-	signal(SIGABRT, &sighandler);
-	signal(SIGTERM, &sighandler);
-	signal(SIGINT, &sighandler);
-
-	// load graphics scene
-	auto graphics = new Sai2Graphics::Sai2Graphics(world_file, true);
-	Eigen::Vector3d camera_pos, camera_lookat, camera_vertical;
-	graphics->getCameraPose(camera_name, camera_pos, camera_vertical, camera_lookat);
-	graphics->_world->setBackgroundColor(66.0/255, 135.0/255, 245.0/255);  // set blue background 	
-	//graphics->showLinkFrame(true, robot_name, ee_link_name, 0.15);  // can add frames for different links
-	graphics->getCamera(camera_name)->setClippingPlanes(0.1, 50);  // set the near and far clipping planes 
-
-  auto robot = createNewRobot();
-	auto sim = createNewSim(robot);
-
 	/*------- Set up visualization -------*/
 	// set up error callback
 	glfwSetErrorCallback(glfwError);
@@ -218,6 +199,15 @@ int main() {
 
 	// cache variables
 	double last_cursorx, last_cursory;
+
+	// init redis client values 
+	redis_client.set(CONTROLLER_RUNNING_KEY, "0");  
+	redis_client.setEigenMatrixJSON(JOINT_ANGLES_KEY, robot->_q.head(10)); 
+	redis_client.setEigenMatrixJSON(JOINT_VELOCITIES_KEY, robot->_dq.head(10));
+	redis_client.set(SIMULATION_LOOP_DONE_KEY, bool_to_string(fSimulationLoopDone));
+  redis_client.set(CONTROLLER_LOOP_DONE_KEY, bool_to_string(fControllerLoopDone));
+	redis_client.set(CHANGE_BALL_RESTITUTION_KEY, "false");
+	redis_client.set(RESET_PINS, "false");
 
 	// start simulation thread
 	fSimulationRunning = true;
@@ -392,47 +382,44 @@ void simulation(Sai2Model::Sai2Model* robot, Simulation::Sai2Simulation* sim)
 				check_pin_reset_status = string_to_bool(redis_client.get(RESET_PINS));
 
 				if (check_pin_reset_status) {
-					*robot = *createNewRobot();
-					*sim = *createNewSim(robot);
-					redis_client.set(RESET_PINS, "false");
-				// 	for (int i = 0; i < n_objects-1; ++i) {
-				// 		//object_positions_init[i][2] -=.25;
-	 			// 		sim->setObjectPosition(object_names[i], object_positions_init[i], object_orientations_init[i]);
-				// 		//sim->getObjectPosition(object_names[i], object_pos[i], object_ori[i]);
-				// 		auto _object = sim->_world->getBaseNode(object_names[i]);
-				// 		_object->enableDynamics(true);
-				// 		_object->markForUpdate(true);
-				// 		_object->m_dynamicJoints[2]->setForce(-0.001);
-				// 		_object->m_dynamicJoints[0]->setVel(0);
-				// 		_object->m_dynamicJoints[1]->setVel(0);
-				// 		_object->m_dynamicJoints[2]->setVel(0);
-				// 		// _object->m_dynamicJoints[3]->setVel(0);
-				// 		// _object->m_dynamicJoints[4]->setVel(0);
-				// 		// _object->m_dynamicJoints[5]->setVel(0);
-	 			// 	}
-				// 	sim->setObjectPosition(object_names[10], object_positions_init[10], object_orientations_init[10]);
-				// 	sim->setCollisionRestitution("ball", 0.0);
-				// 	sim->setCoeffFrictionStatic("ball",1.0);
-				// 	sim->setCoeffFrictionDynamic("ball",1.0);
-				// 	sim->setCoeffFrictionStatic(robot_name,"leftfinger",.8);
-				// 	sim->setCoeffFrictionDynamic(robot_name,"rightfinger",.8);
-				// 	sim->setCoeffFrictionDynamic(robot_name,"leftfinger_bottom",.8);
-				// 	sim->setCoeffFrictionDynamic(robot_name,"rightfinger_bottom",.8);
-				// 	auto _object = sim->_world->getBaseNode("ball");
-				// 	_object->enableDynamics(true);
-				// 	_object->markForUpdate(true);
-				// 	_object->m_dynamicJoints[2]->setForce(-0.001);
-				// 	_object->m_dynamicJoints[0]->setVel(0);
-				// 	_object->m_dynamicJoints[1]->setVel(0);
-				// 	_object->m_dynamicJoints[2]->setVel(0);
-				// 	// _object->m_dynamicJoints[3]->setVel(0);
-				// 	// _object->m_dynamicJoints[4]->setVel(0);
-				// 	// _object->m_dynamicJoints[5]->setVel(0);
-	 			// 	redis_client.set(RESET_PINS, "false");
-				// // 	// cout << "pin1 pos: " << object_pos[0].transpose() << "\n";
-				// // 	// cout << "pin2 pos: " << object_pos[1].transpose() << "\n";
-				// // 	// cout << "pin3 pos: " << object_pos[2].transpose() << "\n";
-				// // 	// cout << "ball pos: " << object_pos[10].transpose() << "\n";
+					for (int i = 0; i < n_objects-1; ++i) {
+						//object_positions_init[i][2] -=.25;
+	 					sim->setObjectPosition(object_names[i], object_positions_init[i], object_orientations_init[i]);
+						//sim->getObjectPosition(object_names[i], object_pos[i], object_ori[i]);
+						auto _object = sim->_world->getBaseNode(object_names[i]);
+						_object->enableDynamics(true);
+						_object->markForUpdate(true);
+						_object->m_dynamicJoints[2]->setForce(-0.001);
+						_object->m_dynamicJoints[0]->setVel(0);
+						_object->m_dynamicJoints[1]->setVel(0);
+						_object->m_dynamicJoints[2]->setVel(0);
+						// _object->m_dynamicJoints[3]->setVel(0);
+						// _object->m_dynamicJoints[4]->setVel(0);
+						// _object->m_dynamicJoints[5]->setVel(0);
+	 				}
+					sim->setObjectPosition(object_names[10], object_positions_init[10], object_orientations_init[10]);
+					sim->setCollisionRestitution("ball", 0.0);
+					sim->setCoeffFrictionStatic("ball",1.0);
+					sim->setCoeffFrictionDynamic("ball",1.0);
+					sim->setCoeffFrictionStatic(robot_name,"leftfinger",.8);
+					sim->setCoeffFrictionDynamic(robot_name,"rightfinger",.8);
+					sim->setCoeffFrictionDynamic(robot_name,"leftfinger_bottom",.8);
+					sim->setCoeffFrictionDynamic(robot_name,"rightfinger_bottom",.8);
+					auto _object = sim->_world->getBaseNode("ball");
+					_object->enableDynamics(true);
+					_object->markForUpdate(true);
+					_object->m_dynamicJoints[2]->setForce(-0.001);
+					_object->m_dynamicJoints[0]->setVel(0);
+					_object->m_dynamicJoints[1]->setVel(0);
+					_object->m_dynamicJoints[2]->setVel(0);
+					// _object->m_dynamicJoints[3]->setVel(0);
+					// _object->m_dynamicJoints[4]->setVel(0);
+					// _object->m_dynamicJoints[5]->setVel(0);
+	 				redis_client.set(RESET_PINS, "false");
+				// 	// cout << "pin1 pos: " << object_pos[0].transpose() << "\n";
+				// 	// cout << "pin2 pos: " << object_pos[1].transpose() << "\n";
+				// 	// cout << "pin3 pos: " << object_pos[2].transpose() << "\n";
+				// 	// cout << "ball pos: " << object_pos[10].transpose() << "\n";
 				}
 
 				// apply gravity compensation 

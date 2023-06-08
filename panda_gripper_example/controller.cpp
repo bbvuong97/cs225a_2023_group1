@@ -136,8 +136,9 @@ int main() {
 	// 				 0, 0, 1;
 
 	Matrix3d R2 = AngleAxisd(M_PI / 4, Vector3d(1,0,0)).toRotationMatrix();
+	Matrix3d R3 = AngleAxisd(M_PI / 4, Vector3d(0,0,1)).toRotationMatrix();
 
-	hor_orient = vert_orient2 * R2;
+	hor_orient = vert_orient2 * R2 * R3;
 
 	// hor_orient << 1, 0, 0,
 	// 							0, 1, 0,
@@ -170,7 +171,8 @@ int main() {
 	//desired_q_throwing << 0.0, 0.0, -55.0, -105.0, 0.0, 110.0, -55.0; 
 	desired_q_throwing << 0.0, 0.0, -50.0, -105.0, 0.0, 100.0, -55.0; //prev
 	desired_q_throwing *= M_PI/180.0; //prev
-	desired_q_throwing << 1.4657, -.904, -.2735, -2.512, -0.181, 1.748, 1.32;
+	desired_q_throwing << 1.4657, -.904, -.2735, -2.512, -0.181, 1.748, 1.32+M_PI/4;
+	//desired_q_throwing << 1.4657, -1.2, -.2735, -2.0, -0.181, 1.748, 1.32+M_PI/4;
 	//joint_task->_desired_velocity = qdot_init_desired;
 	Vector3d desiredthrowtraj;
 
@@ -556,7 +558,14 @@ int main() {
 						N_prec = base_task->_N;	
 						joint_task->updateTaskModel(N_prec);
 
-						desiredthrowtraj(0) = ee_pos_init(0);
+						posori_task->_kp_ori = 400*4;
+						posori_task->_kv_ori = 48*4;
+						posori_task->_kp_pos = 400;
+						posori_task->_kv_pos = 40;
+						
+						//posori_task->setDynamicDecouplingBIE();
+
+						desiredthrowtraj(0) = ee_pos_init(0)-.2;
 						desiredthrowtraj(1) = ee_pos_init(1) + ((centroid_vec(1) - zero_offset(1)) * scale_factor_y);
 						desiredthrowtraj(2) = ee_pos_init(2) + ((centroid_vec(2) - zero_offset(2)) * scale_factor_z);
 
