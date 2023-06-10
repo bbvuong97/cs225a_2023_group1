@@ -367,7 +367,7 @@ int main() {
 				command_torques.tail(4) = gripper_command_torques;
 				//cout<< "\t" << gripper_command_torques.transpose() << "\n";
 
-				cout << "gripper joints "<< (q_gripper).transpose() << "\n";
+				//cout << "gripper joints "<< (q_gripper).transpose() << "\n";
 
 				if ( (q_gripper(2)-q_gripper(1))<.23 ) {
 					state = LIFT;
@@ -547,7 +547,7 @@ int main() {
 							// cout << "EE X: " << ee_pos_init(0) << "\n";
 							// cout << "EE Y: " << ee_pos_init(1)<< "\n";
 							// cout << "EE Z: " << ee_pos_init(2)<< "\n";
-							cout << "ee_pos_init" << ee_pos_init.transpose() <<"\n";
+							// cout << "ee_pos_init" << ee_pos_init.transpose() <<"\n";
 							cameracounter++;
 						}
 						
@@ -574,7 +574,7 @@ int main() {
 						//base_task->_desired_position = base_pose_desired;
 						base_task->_desired_position(0) = base_pose_desired(0);
 						base_task->_desired_position(2) = base_pose_desired(2);
-						base_task->_desired_position(1) = desiredthrowtraj(1)-.2;
+						base_task->_desired_position(1) = desiredthrowtraj(1)-.4;
 			
 						//base_task->_kv = 10;
 
@@ -601,7 +601,7 @@ int main() {
 
 						robot->position(ee_pos, control_link, control_point);
 
-						cout << "ee_pos" << ee_pos.transpose() <<"\n";
+						//cout << "ee_pos" << ee_pos.transpose() <<"\n";
 
 						//if ((abs(ee_pos(2)-max_z_arm)<=.005)||(abs(ee_pos(1)-max_y_arm)<=.005)){
 						if (abs(ee_pos(1)-max_y_arm)<=.005){
@@ -661,8 +661,8 @@ int main() {
 						//joint_task->_desired_position(0) = 0;
 						//q_gripper_desired.setZero();
 						base_task->_desired_position = robot->_q.head(3);
-						base_task->_kp = 400;
-						base_task->_kv = 40;
+						base_task->_kp = 800;
+						base_task->_kv = 80;
 
 						state = RETURN_HOME_ARM;
 						continue;
@@ -688,15 +688,15 @@ int main() {
 					gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 					command_torques.tail(4) = gripper_command_torques;
 
-					cout << "error arm " << (robot->_q.segment(3,7) - q_init_desired).norm() << "\n";
+					//cout << "error arm " << (robot->_q.segment(3,7) - q_init_desired).norm() << "\n";
 
-					if ( (robot->_q.segment(3,7) - q_init_desired).norm() < 0.3 ) {
+					if ( (robot->_q.segment(3,7) - q_init_desired).norm() < 0.5 ) {
 						cout << "Move to state 12: RETURN_HOME_BASE\n" << endl;
 
 						base_task->reInitializeTask();
 						base_task->_desired_position = base_pose_center;
-						base_task->_kp = 400;
-						base_task->_kv = 40;
+						base_task->_kp = 800;
+						base_task->_kv = 80;
 						q_gripper_desired.setZero();
 						state = RETURN_HOME_BASE;
 					}
@@ -716,7 +716,7 @@ int main() {
 					gripper_command_torques = - kp_gripper * (q_gripper - q_gripper_desired) - kv_gripper * dq_gripper;
 					command_torques.tail(4) = gripper_command_torques;
 
-					cout << "base pos" << robot->_q.head(3).transpose() << "\n";
+					//cout << "base pos" << robot->_q.head(3).transpose() << "\n";
 
 					if ( (robot->_q.head(3) - base_pose_center).norm() < 0.05 ) {
 						cout << "Move back to state 1: BASE\n" << endl;

@@ -1182,10 +1182,11 @@
 	</light>
 
 	<camera name="camera_fixed">
-		<!-- <position xyz="0 -3.5 2" /> -->
+		<position xyz="0 -3.5 2" />
 		<!-- <position xyz = "0 -3.5 7" /> -->
 		<!-- <position xyz = "3.5 0 1" newest/> -->
-		<position xyz = "0 5 1"/>
+		<!-- <position xyz = "0 5 1"/> -->
+		<!-- <position xyz="2.0 -2.0 1.5" /> -->
 		<vertical xyz="0.0 0.0 5.0" />
 		<lookat xyz="0 1 0.5" />
 		<!-- <lookat xyz="0 0 1" /> -->
